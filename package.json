@@ -1,0 +1,53 @@
+{
+  "name": "imageviewer",
+  "description": "A simple jQuery image viewing plugin.",
+  "version": "0.1.0",
+  "main": "dist/viewer.js",
+  "keywords": [
+    "image",
+    "view",
+    "viewing",
+    "viewer",
+    "jquery",
+    "plugin",
+    "html",
+    "css",
+    "javascript",
+    "front-end",
+    "web",
+    "development"
+  ],
+  "author": {
+    "name": "Fengyuan Chen",
+    "url": "https://github.com/fengyuanchen"
+  },
+  "homepage": "https://github.com/fengyuanchen/viewer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fengyuanchen/viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fengyuanchen/viewer/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jquery": ">= 1.9.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^2.3.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-csscomb": "^3.0.6",
+    "gulp-csslint": "^0.2.0",
+    "gulp-htmlcomb": "^0.0.1",
+    "gulp-jscs": "^2.0.0",
+    "gulp-jshint": "^1.11.2",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-minify-css": "^1.2.1",
+    "gulp-rename": "^1.2.0",
+    "gulp-replace": "^0.5.4",
+    "gulp-sass": "^2.0.4",
+    "gulp-sourcemaps": "^1.5.1",
+    "gulp-uglify": "^1.4.0"
+  }
+}

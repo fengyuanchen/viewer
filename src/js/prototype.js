@@ -1,0 +1,1 @@
+  $.extend(Viewer.prototype, prototype);
