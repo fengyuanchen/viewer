@@ -30,6 +30,8 @@
     "bower_components",
     "tests",
     "test",
+    "assets",
+    "demo",
     "docs"
   ],
   "dependencies": {
