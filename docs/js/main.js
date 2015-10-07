@@ -10,7 +10,7 @@ $(function () {
         console.log(e.type);
       };
   var options = {
-        // inline: true,
+        inline: true,
         url: 'data-original',
         build: handler,
         built: handler,
