@@ -83,7 +83,8 @@ gulp.task('jshint', ['js+'], function () {
 
 gulp.task('jscs', ['js+'], function () {
   return gulp.src(scripts.all).
-    pipe(plugins.jscs());
+    pipe(plugins.jscs()).
+    pipe(plugins.jscs.reporter());
 });
 
 gulp.task('js', ['jshint', 'jscs'], function () {
@@ -92,7 +93,7 @@ gulp.task('js', ['jshint', 'jscs'], function () {
     pipe(gulp.dest(scripts.dest)).
     pipe(plugins.rename(scripts.min)).
     pipe(plugins.uglify({
-      preserveComments: 'some'
+      preserveComments: 'license'
     })).
     pipe(gulp.dest(scripts.dest));
 });
@@ -135,7 +136,10 @@ gulp.task('css', ['csslint'], function () {
     pipe(plugins.csscomb()).
     pipe(gulp.dest(styles.dest)).
     pipe(plugins.rename(styles.min)).
-    pipe(plugins.minifyCss()).
+    pipe(plugins.minifyCss({
+      compatibility: 'ie8',
+      keepSpecialComments: 1
+    })).
     pipe(gulp.dest(styles.dest));
 });
 
