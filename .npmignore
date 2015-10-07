@@ -1,9 +1,13 @@
 # Files to ignore
 
 bower_components
+examples
 assets
 demo
 docs
-*.map
-_*
-!src/scss/_*.scss
+test
+/_*
+/.*
+dist/*.map
+bower.json
+gulpfile.js

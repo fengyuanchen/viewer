@@ -28,11 +28,13 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "examples",
+    "assets",
     "tests",
     "test",
-    "assets",
     "demo",
-    "docs"
+    "docs",
+    "gulpfile.js"
   ],
   "dependencies": {
     "jquery": ">= 1.9.1"
