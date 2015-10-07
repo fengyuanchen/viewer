@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 0.1.1 (Oct 7, 2015)
+
+- Fixed the issue of modal closing after zoomed in and zoomed out.
+
+
 ## 0.1.0 (Sep 2, 2015)
 
 - Supports 2 modes: "modal" (default), "inline"

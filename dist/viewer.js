@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.1.0
+ * Viewer v0.1.1
  * https://github.com/fengyuanchen/viewer
  *
  * Copyright (c) 2015 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2015-09-02T09:08:17.666Z
+ * Date: 2015-10-07T06:34:31.917Z
  */
 
 (function (factory) {
@@ -815,11 +815,6 @@
 
       if (action) {
         event.preventDefault();
-
-        if (action === 'move' && options.transition) {
-          this.$image.removeClass(CLASS_TRANSITION);
-        }
-
         this.action = action;
 
         // IE8  has `event.pageX/Y`, but not `event.originalEvent.pageX/Y`
@@ -831,6 +826,8 @@
 
     mousemove: function (event) {
       var options = this.options;
+      var action = this.action;
+      var $image = this.$image;
       var originalEvent = event.originalEvent;
       var touches = originalEvent && originalEvent.touches;
       var e = event;
@@ -856,8 +853,12 @@
         e = touches[0];
       }
 
-      if (this.action) {
+      if (action) {
         event.preventDefault();
+
+        if (action === 'move' && options.transition && $image.hasClass(CLASS_TRANSITION)) {
+          $image.removeClass(CLASS_TRANSITION);
+        }
 
         this.endX = e.pageX || originalEvent && originalEvent.pageX;
         this.endY = e.pageY || originalEvent && originalEvent.pageY;

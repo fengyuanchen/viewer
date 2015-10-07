@@ -651,6 +651,12 @@ As a jQuery plugin, you also need to see the [jQuery Browser Support](http://jqu
 
 
 
+## Versioning
+
+Maintained under the [Semantic Versioning guidelines](http://semver.org/).
+
+
+
 ## [License](LICENSE.md)
 
-Released under the [MIT](http://opensource.org/licenses/mit-license.html) license.
+[MIT](http://opensource.org/licenses/MIT) © [Fengyuan Chen](http://github.com/fengyuanchen)
