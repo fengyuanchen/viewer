@@ -113,8 +113,12 @@
       } else {
         $image.one(EVENT_LOAD, $.proxy(this.load, this));
 
+        if (this.timeout) {
+          clearTimeout(this.timeout);
+        }
+
         // Make the image visible if it fails to load within 1s
-        setTimeout(function () {
+        this.timeout = setTimeout(function () {
           $image.removeClass(CLASS_INVISIBLE);
         }, 1000);
       }

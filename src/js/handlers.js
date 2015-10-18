@@ -96,6 +96,11 @@
       var viewer = this.viewer;
       var $image = this.$image;
 
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = false;
+      }
+
       $image.removeClass(CLASS_INVISIBLE).css('cssText', (
         'width:0;' +
         'height:0;' +

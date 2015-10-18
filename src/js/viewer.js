@@ -12,6 +12,7 @@
     this.transitioning = false;
     this.action = false;
     this.target = false;
+    this.timeout = false;
     this.index = 0;
     this.length = 0;
     this.init();
