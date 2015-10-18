@@ -41,7 +41,8 @@ var styles = {
       min: 'viewer.min.css',
       all: [
         'dist/viewer.css',
-        'docs/css/*.css'
+        'demo/css/main.css',
+        'docs/css/main.css'
       ],
       scss: 'src/scss/*.scss',
       main: 'dist/viewer.css',
