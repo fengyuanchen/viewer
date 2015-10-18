@@ -5,4 +5,11 @@
   bottom: 0;
   left: 0;
   overflow: hidden;
+
+  > img {
+    width: auto;
+    height: auto;
+    max-width: 90% !important;
+    margin: 15px auto;
+  }
 }
