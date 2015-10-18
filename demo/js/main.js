@@ -47,7 +47,7 @@ $(function () {
 
     options[name] = name === 'inline' ? $input.data('value') : $input.prop('checked');
     $images.viewer('destroy').viewer(options);
-    toggleButtons(name);
+    toggleButtons(options.inline ? 'inline' : 'modal');
   });
 
   $buttons.on('click', 'button', function () {

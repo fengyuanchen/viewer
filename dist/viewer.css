@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.1.1
+ * Viewer v0.2.0
  * https://github.com/fengyuanchen/viewer
  *
  * Copyright (c) 2015 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2015-10-07T06:34:31.370Z
+ * Date: 2015-10-18T11:12:55.720Z
  */
 .viewer-zoom-in:before,
 .viewer-zoom-out:before,
@@ -136,7 +136,7 @@
   width: 100%;
   min-width: 0 !important;
   max-width: none !important;
-  height: 100%;
+  height: auto;
   min-height: 0 !important;
   max-height: none !important;
 }
@@ -148,6 +148,12 @@
   bottom: 0;
   left: 0;
   overflow: hidden;
+}
+.viewer-canvas > img {
+  width: auto;
+  max-width: 90% !important;
+  height: auto;
+  margin: 15px auto;
 }
 
 .viewer-footer {

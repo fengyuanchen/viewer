@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.1.1
+ * Viewer v0.2.0
  * https://github.com/fengyuanchen/viewer
  *
  * Copyright (c) 2015 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2015-10-07T06:34:31.917Z
+ * Date: 2015-10-18T11:12:56.198Z
  */
 
 (function (factory) {
@@ -77,7 +77,7 @@
   var abs = Math.abs;
   var min = Math.min;
   var max = Math.max;
-  var num = parseFloat;
+  var num = Number;
 
   // Prototype
   var prototype = {};
@@ -167,6 +167,7 @@
     this.transitioning = false;
     this.action = false;
     this.target = false;
+    this.timeout = false;
     this.index = 0;
     this.length = 0;
     this.init();
@@ -629,7 +630,29 @@
     },
 
     load: function () {
+      var options = this.options;
+      var viewer = this.viewer;
+      var $image = this.$image;
+
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = false;
+      }
+
+      $image.removeClass(CLASS_INVISIBLE).css('cssText', (
+        'width:0;' +
+        'height:0;' +
+        'margin-left:' + viewer.width / 2 + 'px;' +
+        'margin-top:' + viewer.height / 2 + 'px;' +
+        'max-width:none!important;' +
+        'visibility:visible;'
+      ));
+
       this.initImage($.proxy(function () {
+        $image.
+          toggleClass(CLASS_TRANSITION, options.transition).
+          toggleClass(CLASS_MOVE, options.movable);
+
         this.renderImage($.proxy(function () {
           this.isViewed = true;
           this.trigger(EVENT_VIEWED);
@@ -960,8 +983,6 @@
      * @param {Number} index
      */
     view: function (index) {
-      var options = this.options;
-      var viewer = this.viewer;
       var $title = this.$title;
       var $image;
       var $item;
@@ -986,25 +1007,29 @@
       alt = $img.attr('alt');
 
       this.$image = $image = $('<img src="' + url + '" alt="' + alt + '">');
-
-      $image.
-        toggleClass(CLASS_TRANSITION, options.transition).
-        toggleClass(CLASS_MOVE, options.movable).
-        css({
-          width: 0,
-          height: 0,
-          marginLeft: viewer.width / 2,
-          marginTop: viewer.height / 2
-        });
-
       this.$items.eq(this.index).removeClass(CLASS_ACTIVE);
       $item.addClass(CLASS_ACTIVE);
 
       this.isViewed = false;
       this.index = index;
       this.image = null;
-      $image.one(EVENT_LOAD, $.proxy(this.load, this));
-      this.$canvas.html($image);
+      this.$canvas.html($image.addClass(CLASS_INVISIBLE));
+
+      if ($image[0].complete) {
+        this.load();
+      } else {
+        $image.one(EVENT_LOAD, $.proxy(this.load, this));
+
+        if (this.timeout) {
+          clearTimeout(this.timeout);
+        }
+
+        // Make the image visible if it fails to load within 1s
+        this.timeout = setTimeout(function () {
+          $image.removeClass(CLASS_INVISIBLE);
+        }, 1000);
+      }
+
       $title.empty();
 
       // Center current item
@@ -1031,7 +1056,7 @@
     },
 
     /**
-     * Move the image
+     * Move the image with relative offsets
      *
      * @param {Number} offsetX
      * @param {Number} offsetY (optional)
@@ -1039,89 +1064,103 @@
     move: function (offsetX, offsetY) {
       var image = this.image;
 
-      // If "offsetY" is not present, its default value is "offsetX"
-      if (isUndefined(offsetY)) {
-        offsetY = offsetX;
+      this.moveTo(
+        isUndefined(offsetX) ? offsetX : image.left + num(offsetX),
+        isUndefined(offsetY) ? offsetY : image.top + num(offsetY)
+      );
+    },
+
+    /**
+     * Move the image to an absolute point
+     *
+     * @param {Number} x
+     * @param {Number} y (optional)
+     */
+    moveTo: function (x, y) {
+      var image = this.image;
+      var changed = false;
+
+      // If "y" is not present, its default value is "x"
+      if (isUndefined(y)) {
+        y = x;
       }
 
-      offsetX = num(offsetX);
-      offsetY = num(offsetY);
+      x = num(x);
+      y = num(y);
 
       if (this.isShown && !this.isPlayed && this.options.movable) {
-        image.left += isNumber(offsetX) ? offsetX : 0;
-        image.top += isNumber(offsetY) ? offsetY : 0;
-        this.renderImage();
+        if (isNumber(x)) {
+          image.left = x;
+          changed = true;
+        }
+
+        if (isNumber(y)) {
+          image.top = y;
+          changed = true;
+        }
+
+        if (changed) {
+          this.renderImage();
+        }
       }
     },
 
     /**
-     * Zoom the image
+     * Zoom the image with a relative ratio
      *
      * @param {Number} ratio
      * @param {Boolean} hasTooltip (optional)
      */
     zoom: function (ratio, hasTooltip) {
-      var options = this.options;
-      var minZoomRatio = max(0.01, options.minZoomRatio);
-      var maxZoomRatio = min(100, options.maxZoomRatio);
       var image = this.image;
-      var width;
-      var height;
 
       ratio = num(ratio);
 
-      if (isNumber(ratio) && this.isShown && !this.isPlayed && options.zoomable) {
-        if (ratio < 0) {
-          ratio =  1 / (1 - ratio);
-        } else {
-          ratio = 1 + ratio;
-        }
-
-        width = image.width * ratio;
-        height = image.height * ratio;
-        ratio = width / image.naturalWidth;
-        ratio = min(max(ratio, minZoomRatio), maxZoomRatio);
-
-        if (ratio > 0.95 && ratio < 1.05) {
-          ratio = 1;
-          width = image.naturalWidth;
-          height = image.naturalHeight;
-        }
-
-        image.left -= (width - image.width) / 2;
-        image.top -= (height - image.height) / 2;
-        image.width = width;
-        image.height = height;
-        image.ratio = ratio;
-        this.renderImage();
-
-        if (hasTooltip) {
-          this.tooltip();
-        }
+      if (ratio < 0) {
+        ratio =  1 / (1 - ratio);
+      } else {
+        ratio = 1 + ratio;
       }
+
+      this.zoomTo(image.width * ratio / image.naturalWidth, hasTooltip);
     },
 
     /**
-     * Zoom the image to a special ratio
+     * Zoom the image to an absolute ratio
      *
      * @param {Number} ratio
      * @param {Boolean} hasTooltip (optional)
      * @param {Boolean} _zoomable (private)
      */
     zoomTo: function (ratio, hasTooltip, _zoomable) {
+      var options = this.options;
+      var minZoomRatio = 0.01;
+      var maxZoomRatio = 100;
       var image = this.image;
-      var width;
-      var height;
+      var width = image.width;
+      var height = image.height;
+      var newWidth;
+      var newHeight;
 
-      ratio = max(ratio, 0);
+      ratio = max(0, ratio);
 
-      if (isNumber(ratio) && this.isShown && !this.isPlayed && (_zoomable || this.options.zoomable)) {
-        width = image.naturalWidth * ratio;
-        height = image.naturalHeight * ratio;
-        image.left -= (width - image.width) / 2;
-        image.top -= (height - image.height) / 2;
-        image.width = width;
-        image.height = height;
+      if (isNumber(ratio) && this.isShown && !this.isPlayed && (_zoomable || options.zoomable)) {
+        if (!_zoomable) {
+          minZoomRatio = max(minZoomRatio, options.minZoomRatio);
+          maxZoomRatio = min(maxZoomRatio, options.maxZoomRatio);
+          ratio = min(max(ratio, minZoomRatio), maxZoomRatio);
+        }
+
+        if (ratio > 0.95 && ratio < 1.05) {
+          ratio = 1;
+        }
+
+        newWidth = image.naturalWidth * ratio;
+        newHeight = image.naturalHeight * ratio;
+        image.left -= (newWidth - width) / 2;
+        image.top -= (newHeight - height) / 2;
+        image.width = newWidth;
+        image.height = newHeight;
         image.ratio = ratio;
         this.renderImage();
 
@@ -1132,34 +1171,27 @@
     },
 
     /**
-     * Rotate the image
-     * https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function#rotate()
+     * Rotate the image with a relative degree
      *
-     * @param {Number} degrees
+     * @param {Number} degree
      */
-    rotate: function (degrees) {
-      var image = this.image;
-
-      degrees = num(degrees);
-
-      if (isNumber(degrees) && this.isShown && !this.isPlayed && this.options.rotatable) {
-        image.rotate = ((image.rotate || 0) + degrees);
-        this.renderImage();
-      }
+    rotate: function (degree) {
+      this.rotateTo((this.image.rotate || 0) + num(degree));
     },
 
     /**
-     * Rotate the image to a special angle
+     * Rotate the image to an absolute degree
+     * https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function#rotate()
      *
-     * @param {Number} degrees
+     * @param {Number} degree
      */
-    rotateTo: function (degrees) {
+    rotateTo: function (degree) {
       var image = this.image;
 
-      degrees = num(degrees);
+      degree = num(degree);
 
-      if (isNumber(degrees) && this.isShown && !this.isPlayed && this.options.rotatable) {
-        image.rotate = degrees;
+      if (isNumber(degree) && this.isShown && !this.isPlayed && this.options.rotatable) {
+        image.rotate = degree;
         this.renderImage();
       }
     },
@@ -1173,6 +1205,7 @@
      */
     scale: function (scaleX, scaleY) {
       var image = this.image;
+      var changed = false;
 
       // If "scaleY" is not present, its default value is "scaleX"
       if (isUndefined(scaleY)) {
@@ -1183,9 +1216,19 @@
       scaleY = num(scaleY);
 
       if (this.isShown && !this.isPlayed && this.options.scalable) {
-        image.scaleX = isNumber(scaleX) ? scaleX : 1;
-        image.scaleY = isNumber(scaleY) ? scaleY : 1;
-        this.renderImage();
+        if (isNumber(scaleX)) {
+          image.scaleX = scaleX;
+          changed = true;
+        }
+
+        if (isNumber(scaleY)) {
+          image.scaleY = scaleY;
+          changed = true;
+        }
+
+        if (changed) {
+          this.renderImage();
+        }
       }
     },
 

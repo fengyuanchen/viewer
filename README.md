@@ -1,8 +1,8 @@
-# [Image Viewer](https://github.com/fengyuanchen/viewer)
+# [Viewer](https://github.com/fengyuanchen/viewer)
 
 > A simple jQuery image viewing plugin.
 
-- [Demo](http://fengyuanchen.github.io/viewer)
+- [Demo](https://fengyuanchen.github.io/viewer)
 
 
 
@@ -64,7 +64,6 @@ Initialize with `$.fn.viewer` method.
 
 ```html
 <!-- a block container is required -->
-
 <div>
   <img class="image" src="picture.jpg" alt="Picture">
 </div>
@@ -389,7 +388,6 @@ View the next image.
 
 - **offsetX**:
   - Type: `Number`
-  - Default: `0`
   - Moving size (px) in the horizontal direction
 
 - **offsetY** (optional):
@@ -397,7 +395,7 @@ View the next image.
   - Moving size (px) in the vertical direction.
   - If not present, its default value is `offsetX`
 
-Move the image.
+Move the image with relative offsets.
 
 ```js
 $().viewer('move', 1);
@@ -406,6 +404,20 @@ $().viewer('move', 1, 0);  // Move right
 $().viewer('move', 0, -1); // Move up
 $().viewer('move', 0, 1);  // Move down
 ```
+
+
+### moveTo(x[, y])
+
+- **x**:
+  - Type: `Number`
+  - The `left` value of the image
+
+- **y** (optional):
+  - Type: `Number`
+  - The `top` value of the image
+  - If not present, its default value is `x`.
+
+Move the image to an absolute point.
 
 
 ### zoom(ratio[, hasTooltip])
@@ -420,7 +432,7 @@ $().viewer('move', 0, 1);  // Move down
   - Default: `false`
   - Show tooltip
 
-Zoom the image.
+Zoom the image with a relative ratio
 
 ```js
 $().viewer('zoom', 0.1);
@@ -439,7 +451,7 @@ $().viewer('zoom', -0.1);
   - Default: `false`
   - Show tooltip
 
-Zoom the image to a special ratio.
+Zoom the image to an absolute ratio.
 
 ```js
 $().viewer('zoomTo', 0); // Zoom to zero size (0%)
@@ -454,7 +466,7 @@ $().viewer('zoomTo', 1); // Zoom to natural size (100%)
   - Rotate right: requires a positive number (degree > 0)
   - Rotate left: requires a negative number (degree < 0)
 
-Rotate the image.
+Rotate the image with a relative degree.
 
 > Requires [CSS3 2D Transforms](http://caniuse.com/transforms2d) support (IE 9+).
 
@@ -469,7 +481,7 @@ $().viewer('rotate', -90);
 - **degree**:
   - Type: `Number`
 
-Rotate the image to a special angle.
+Rotate the image to an absolute degree.
 
 > Requires [CSS3 2D Transforms](http://caniuse.com/transforms2d) support (IE 9+).
 
