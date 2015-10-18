@@ -92,7 +92,24 @@
     },
 
     load: function () {
+      var options = this.options;
+      var viewer = this.viewer;
+      var $image = this.$image;
+
+      $image.removeClass(CLASS_INVISIBLE).css('cssText', (
+        'width:0;' +
+        'height:0;' +
+        'margin-left:' + viewer.width / 2 + 'px;' +
+        'margin-top:' + viewer.height / 2 + 'px;' +
+        'max-width:none!important;' +
+        'visibility:visible;'
+      ));
+
       this.initImage($.proxy(function () {
+        $image.
+          toggleClass(CLASS_TRANSITION, options.transition).
+          toggleClass(CLASS_MOVE, options.movable);
+
         this.renderImage($.proxy(function () {
           this.isViewed = true;
           this.trigger(EVENT_VIEWED);

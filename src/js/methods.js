@@ -76,8 +76,6 @@
      * @param {Number} index
      */
     view: function (index) {
-      var options = this.options;
-      var viewer = this.viewer;
       var $title = this.$title;
       var $image;
       var $item;
@@ -102,25 +100,25 @@
       alt = $img.attr('alt');
 
       this.$image = $image = $('<img src="' + url + '" alt="' + alt + '">');
-
-      $image.
-        toggleClass(CLASS_TRANSITION, options.transition).
-        toggleClass(CLASS_MOVE, options.movable).
-        css({
-          width: 0,
-          height: 0,
-          marginLeft: viewer.width / 2,
-          marginTop: viewer.height / 2
-        });
-
       this.$items.eq(this.index).removeClass(CLASS_ACTIVE);
       $item.addClass(CLASS_ACTIVE);
 
       this.isViewed = false;
       this.index = index;
       this.image = null;
-      $image.one(EVENT_LOAD, $.proxy(this.load, this));
-      this.$canvas.html($image);
+      this.$canvas.html($image.addClass(CLASS_INVISIBLE));
+
+      if ($image[0].complete) {
+        this.load();
+      } else {
+        $image.one(EVENT_LOAD, $.proxy(this.load, this));
+
+        // Make the image visible if it fails to load within 1s
+        setTimeout(function () {
+          $image.removeClass(CLASS_INVISIBLE);
+        }, 1000);
+      }
+
       $title.empty();
 
       // Center current item
