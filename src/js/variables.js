@@ -52,7 +52,7 @@
   var abs = Math.abs;
   var min = Math.min;
   var max = Math.max;
-  var num = parseFloat;
+  var num = Number;
 
   // Prototype
   var prototype = {};
