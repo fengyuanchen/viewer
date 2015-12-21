@@ -130,7 +130,7 @@
       var parentHeight = $parent.height();
       var filled = e.data && e.data.filled;
 
-      getImageSize(image, $.proxy(function (naturalWidth, naturalHeight) {
+      getImageSize(image, function (naturalWidth, naturalHeight) {
         var aspectRatio = naturalWidth / naturalHeight;
         var width = parentWidth;
         var height = parentHeight;
@@ -155,7 +155,7 @@
           marginLeft: (parentWidth - width) / 2,
           marginTop: (parentHeight - height) / 2
         });
-      }, this));
+      });
     },
 
     resize: function () {
