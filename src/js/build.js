@@ -11,11 +11,7 @@
         return;
       }
 
-      if (!$parent || !$parent.length) {
-        $parent = $this.parent();
-      }
-
-      this.$parent = $parent;
+      this.$parent = $parent = $this.parent();
       this.$viewer = $viewer = $(Viewer.TEMPLATE);
       this.$canvas = $viewer.find('.viewer-canvas');
       this.$footer = $viewer.find('.viewer-footer');
@@ -73,7 +69,7 @@
         return;
       }
 
-      if (options.inline && !options.container) {
+      if (options.inline) {
         $this.removeClass(CLASS_HIDE);
       }
 
