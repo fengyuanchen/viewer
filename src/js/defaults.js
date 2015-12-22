@@ -72,5 +72,7 @@
     show: null,
     shown: null,
     hide: null,
-    hidden: null
+    hidden: null,
+    view: null,
+    viewed: null
   };

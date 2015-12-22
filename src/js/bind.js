@@ -1,5 +1,16 @@
   $.extend(prototype, {
     bind: function () {
+      var options = this.options;
+      var $this = this.$element;
+
+      if ($.isFunction(options.view)) {
+        $this.on(EVENT_VIEW, options.view);
+      }
+
+      if ($.isFunction(options.viewed)) {
+        $this.on(EVENT_VIEWED, options.viewed);
+      }
+
       this.$viewer.
         on(EVENT_CLICK, $.proxy(this.click, this)).
         on(EVENT_WHEEL, $.proxy(this.wheel, this));
@@ -15,6 +26,17 @@
     },
 
     unbind: function () {
+      var options = this.options;
+      var $this = this.$element;
+
+      if ($.isFunction(options.view)) {
+        $this.off(EVENT_VIEW, options.view);
+      }
+
+      if ($.isFunction(options.viewed)) {
+        $this.off(EVENT_VIEWED, options.viewed);
+      }
+
       this.$viewer.
         off(EVENT_CLICK, this.click).
         off(EVENT_WHEEL, this.wheel);
