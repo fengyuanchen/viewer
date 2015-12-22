@@ -40,7 +40,7 @@
   list-style: none;
 }
 
-.docs-pictures li {
+.docs-pictures > li {
   float: left;
   width: 33.3%;
   height: 33.3%;
@@ -49,7 +49,7 @@
   overflow: hidden;
 }
 
-.docs-pictures li img {
+.docs-pictures > li > img {
   width: 100%;
 }
 
