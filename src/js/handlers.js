@@ -234,6 +234,14 @@
 
           break;
 
+        // (Key: Space)
+        case 32:
+          if (this.isPlayed) {
+            this.stop();
+          }
+
+          break;
+
         // View previous (Key: ←)
         case 37:
           this.prev();
