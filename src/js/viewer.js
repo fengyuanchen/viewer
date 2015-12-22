@@ -7,6 +7,7 @@
     this.isViewed = false;
     this.isFulled = false;
     this.isPlayed = false;
+    this.wheeling = false;
     this.playing = false;
     this.fading = false;
     this.transitioning = false;

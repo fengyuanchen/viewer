@@ -44,7 +44,7 @@
           break;
 
         case 'one-to-one':
-          if (this.image.ratio === 1) {
+          if (image.ratio === 1) {
             this.zoomTo(this.initialImage.ratio);
           } else {
             this.zoomTo(1);
@@ -185,6 +185,17 @@
       }
 
       event.preventDefault();
+
+      // Limit wheel speed to prevent zoom too fast
+      if (this.wheeling) {
+        return;
+      }
+
+      this.wheeling = true;
+
+      setTimeout($.proxy(function () {
+        this.wheeling = false;
+      }, this), 50);
 
       if (e.deltaY) {
         delta = e.deltaY > 0 ? 1 : -1;
