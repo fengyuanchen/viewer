@@ -160,7 +160,7 @@
       }, this));
     },
 
-    renderImage: function (callback, transitioning) {
+    renderImage: function (callback) {
       var image = this.image;
       var $image = this.$image;
 
@@ -173,7 +173,7 @@
       });
 
       if ($.isFunction(callback)) {
-        if (transitioning) {
+        if (this.transitioning) {
           $image.one(EVENT_TRANSITIONEND, callback);
         } else {
           callback();

@@ -118,7 +118,7 @@
         this.renderImage($.proxy(function () {
           this.isViewed = true;
           this.trigger(EVENT_VIEWED);
-        }, this), options.transition);
+        }, this));
       }, this));
     },
 
