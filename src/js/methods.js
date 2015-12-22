@@ -181,7 +181,7 @@
       x = num(x);
       y = num(y);
 
-      if (this.isShown && !this.isPlayed && this.options.movable) {
+      if (this.isViewed && !this.isPlayed && this.options.movable) {
         if (isNumber(x)) {
           image.left = x;
           changed = true;
@@ -237,7 +237,7 @@
 
       ratio = max(0, ratio);
 
-      if (isNumber(ratio) && this.isShown && !this.isPlayed && (_zoomable || options.zoomable)) {
+      if (isNumber(ratio) && this.isViewed && !this.isPlayed && (_zoomable || options.zoomable)) {
         if (!_zoomable) {
           minZoomRatio = max(minZoomRatio, options.minZoomRatio);
           maxZoomRatio = min(maxZoomRatio, options.maxZoomRatio);
@@ -283,7 +283,7 @@
 
       degree = num(degree);
 
-      if (isNumber(degree) && this.isShown && !this.isPlayed && this.options.rotatable) {
+      if (isNumber(degree) && this.isViewed && !this.isPlayed && this.options.rotatable) {
         image.rotate = degree;
         this.renderImage();
       }
@@ -308,7 +308,7 @@
       scaleX = num(scaleX);
       scaleY = num(scaleY);
 
-      if (this.isShown && !this.isPlayed && this.options.scalable) {
+      if (this.isViewed && !this.isPlayed && this.options.scalable) {
         if (isNumber(scaleX)) {
           image.scaleX = scaleX;
           changed = true;
@@ -495,7 +495,7 @@
             CLASS_TRANSITION
           ].join(' ');
 
-      if (!this.isShown || this.isPlayed || !options.tooltip) {
+      if (!this.isViewed || this.isPlayed || !options.tooltip) {
         return;
       }
 
@@ -538,7 +538,7 @@
 
     // Reset the image to its initial state.
     reset: function () {
-      if (this.isShown && !this.isPlayed) {
+      if (this.isViewed && !this.isPlayed) {
         this.image = $.extend({}, this.initialImage);
         this.renderImage();
       }
