@@ -249,6 +249,10 @@
 
         // Zoom in (Key: ↑)
         case 38:
+
+          // Prevent scroll on Firefox
+          e.preventDefault();
+
           this.zoom(options.zoomRatio, true);
           break;
 
@@ -259,6 +263,10 @@
 
         // Zoom out (Key: ↓)
         case 40:
+
+          // Prevent scroll on Firefox
+          e.preventDefault();
+
           this.zoom(-options.zoomRatio, true);
           break;
 
