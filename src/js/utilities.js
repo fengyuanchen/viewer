@@ -46,6 +46,11 @@
     return transforms.length ? transforms.join(' ') : 'none';
   }
 
+  // Force reflow to enable CSS3 transition
+  function forceReflow(element) {
+    return element.offsetWidth;
+  }
+
   // e.g.: http://domain.com/path/to/picture.jpg?size=1280×960 -> picture.jpg
   function getImageName(url) {
     return isString(url) ? url.replace(/^.*\//, '').replace(/[\?&#].*$/, '') : '';

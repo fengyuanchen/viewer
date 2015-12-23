@@ -29,9 +29,8 @@
 
       if (options.transition) {
         this.transitioning = true;
-
-        /* jshint expr:true */
-        $viewer.addClass(CLASS_TRANSITION).get(0).offsetWidth;
+        $viewer.addClass(CLASS_TRANSITION);
+        forceReflow($viewer[0]);
         $viewer.one(EVENT_TRANSITIONEND, $.proxy(this.shown, this)).addClass(CLASS_IN);
       } else {
         $viewer.addClass(CLASS_IN);
@@ -505,8 +504,8 @@
             $tooltip.trigger(EVENT_TRANSITIONEND);
           }
 
-          /* jshint expr:true */
-          $tooltip.addClass(classes).get(0).offsetWidth;
+          $tooltip.addClass(classes);
+          forceReflow($tooltip[0]);
           $tooltip.addClass(CLASS_IN);
         } else {
           $tooltip.addClass(CLASS_SHOW);
