@@ -499,8 +499,11 @@
 
       $tooltip.text(round(image.ratio * 100) + '%');
 
-      if (!this.fading) {
+      if (!this.tooltiping) {
         if (options.transition) {
+          if (this.fading) {
+            $tooltip.trigger(EVENT_TRANSITIONEND);
+          }
 
           /* jshint expr:true */
           $tooltip.addClass(classes).get(0).offsetWidth;
@@ -509,19 +512,22 @@
           $tooltip.addClass(CLASS_SHOW);
         }
       } else {
-        clearTimeout(this.fading);
+        clearTimeout(this.tooltiping);
       }
 
-      this.fading = setTimeout($.proxy(function () {
+      this.tooltiping = setTimeout($.proxy(function () {
         if (options.transition) {
-          $tooltip.one(EVENT_TRANSITIONEND, function () {
+          $tooltip.one(EVENT_TRANSITIONEND, $.proxy(function () {
             $tooltip.removeClass(classes);
-          }).removeClass(CLASS_IN);
+            this.fading = false;
+          }, this)).removeClass(CLASS_IN);
+
+          this.fading = true;
         } else {
           $tooltip.removeClass(CLASS_SHOW);
         }
 
-        this.fading = false;
+        this.tooltiping = false;
       }, this), 1000);
     },
 
