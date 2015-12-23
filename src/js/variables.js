@@ -53,6 +53,3 @@
   var min = Math.min;
   var max = Math.max;
   var num = Number;
-
-  // Prototype
-  var prototype = {};

@@ -1,4 +1,3 @@
-  $.extend(prototype, {
     bind: function () {
       var options = this.options;
       var $this = this.$element;
@@ -49,5 +48,4 @@
         off(EVENT_KEYDOWN, this._keydown);
 
       $window.off(EVENT_RESIZE, this._resize);
-    }
-  });
+    },

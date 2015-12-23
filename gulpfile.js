@@ -26,7 +26,6 @@ var scripts = {
         'src/js/handlers.js',
         'src/js/methods.js',
         'src/js/others.js',
-        'src/js/prototype.js',
         'src/js/defaults.js',
         'src/js/template.js',
         'src/js/plugin.js',

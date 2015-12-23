@@ -1,4 +1,3 @@
-  $.extend(prototype, {
     render: function () {
       this.initContainer();
       this.initViewer();
@@ -184,5 +183,4 @@
     resetImage: function () {
       this.$image.remove();
       this.$image = null;
-    }
-  });
+    },

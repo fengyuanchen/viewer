@@ -1,5 +1,3 @@
-  $.extend(prototype, {
-
     // A shortcut for triggering custom events
     trigger: function (type, data) {
       var e = $.Event(type, data);
@@ -120,4 +118,4 @@
       return (image.left >= 0 && image.top >= 0 && image.width <= viewer.width &&
         image.height <= viewer.height);
     }
-  });
+  };

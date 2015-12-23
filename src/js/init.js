@@ -1,4 +1,6 @@
-  $.extend(prototype, {
+  Viewer.prototype = {
+    constructor: Viewer,
+
     init: function () {
       var options = this.options;
       var $this = this.$element;
@@ -19,7 +21,7 @@
         return;
       }
 
-      // Override `transiton` option if it is not supported
+      // Override `transition` option if it is not supported
       if (!SUPPORT_TRANSITION) {
         options.transition = false;
       }
@@ -54,5 +56,4 @@
       if (this.count === this.length) {
         this.build();
       }
-    }
-  });
+    },

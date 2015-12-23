@@ -10,6 +10,7 @@
     this.wheeling = false;
     this.playing = false;
     this.fading = false;
+    this.tooltiping = false;
     this.transitioning = false;
     this.action = false;
     this.target = false;

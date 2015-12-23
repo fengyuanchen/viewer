@@ -1,4 +1,3 @@
-  $.extend(prototype, {
     start: function (e) {
       var target = e.target;
 
@@ -391,5 +390,4 @@
 
         this.action = false;
       }
-    }
-  });
+    },

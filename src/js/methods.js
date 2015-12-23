@@ -1,5 +1,3 @@
-  $.extend(prototype, {
-
     // Show the viewer (only available in modal mode)
     show: function () {
       var options = this.options;
@@ -561,5 +559,4 @@
 
       this.unbuild();
       $this.removeData(NAMESPACE);
-    }
-  });
+    },
