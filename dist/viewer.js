@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.2.0
+ * Viewer v0.3.0
  * https://github.com/fengyuanchen/viewer
  *
  * Copyright (c) 2015 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2015-10-18T11:12:56.198Z
+ * Date: 2015-12-24T09:51:24.343Z
  */
 
 (function (factory) {
@@ -79,9 +79,6 @@
   var max = Math.max;
   var num = Number;
 
-  // Prototype
-  var prototype = {};
-
   function isString(s) {
     return typeof s === 'string';
   }
@@ -130,6 +127,11 @@
     return transforms.length ? transforms.join(' ') : 'none';
   }
 
+  // Force reflow to enable CSS3 transition
+  function forceReflow(element) {
+    return element.offsetWidth;
+  }
+
   // e.g.: http://domain.com/path/to/picture.jpg?size=1280×960 -> picture.jpg
   function getImageName(url) {
     return isString(url) ? url.replace(/^.*\//, '').replace(/[\?&#].*$/, '') : '';
@@ -162,8 +164,10 @@
     this.isViewed = false;
     this.isFulled = false;
     this.isPlayed = false;
+    this.wheeling = false;
     this.playing = false;
     this.fading = false;
+    this.tooltiping = false;
     this.transitioning = false;
     this.action = false;
     this.target = false;
@@ -173,7 +177,9 @@
     this.init();
   }
 
-  $.extend(prototype, {
+  Viewer.prototype = {
+    constructor: Viewer,
+
     init: function () {
       var options = this.options;
       var $this = this.$element;
@@ -194,7 +200,7 @@
         return;
       }
 
-      // Override `transiton` option if it is not supported
+      // Override `transition` option if it is not supported
       if (!SUPPORT_TRANSITION) {
         options.transition = false;
       }
@@ -229,10 +235,8 @@
       if (this.count === this.length) {
         this.build();
       }
-    }
-  });
+    },
 
-  $.extend(prototype, {
     build: function () {
       var options = this.options;
       var $this = this.$element;
@@ -245,11 +249,7 @@
         return;
       }
 
-      if (!$parent || !$parent.length) {
-        $parent = $this.parent();
-      }
-
-      this.$parent = $parent;
+      this.$parent = $parent = $this.parent();
       this.$viewer = $viewer = $(Viewer.TEMPLATE);
       this.$canvas = $viewer.find('.viewer-canvas');
       this.$footer = $viewer.find('.viewer-footer');
@@ -307,16 +307,25 @@
         return;
       }
 
-      if (options.inline && !options.container) {
+      if (options.inline) {
         $this.removeClass(CLASS_HIDE);
       }
 
       this.$viewer.remove();
-    }
-  });
+    },
 
-  $.extend(prototype, {
     bind: function () {
+      var options = this.options;
+      var $this = this.$element;
+
+      if ($.isFunction(options.view)) {
+        $this.on(EVENT_VIEW, options.view);
+      }
+
+      if ($.isFunction(options.viewed)) {
+        $this.on(EVENT_VIEWED, options.viewed);
+      }
+
       this.$viewer.
         on(EVENT_CLICK, $.proxy(this.click, this)).
         on(EVENT_WHEEL, $.proxy(this.wheel, this));
@@ -332,6 +341,17 @@
     },
 
     unbind: function () {
+      var options = this.options;
+      var $this = this.$element;
+
+      if ($.isFunction(options.view)) {
+        $this.off(EVENT_VIEW, options.view);
+      }
+
+      if ($.isFunction(options.viewed)) {
+        $this.off(EVENT_VIEWED, options.viewed);
+      }
+
       this.$viewer.
         off(EVENT_CLICK, this.click).
         off(EVENT_WHEEL, this.wheel);
@@ -344,10 +364,8 @@
         off(EVENT_KEYDOWN, this._keydown);
 
       $window.off(EVENT_RESIZE, this._resize);
-    }
-  });
+    },
 
-  $.extend(prototype, {
     render: function () {
       this.initContainer();
       this.initViewer();
@@ -522,7 +540,7 @@
       });
 
       if ($.isFunction(callback)) {
-        if (this.options.transition) {
+        if (this.transitioning) {
           $image.one(EVENT_TRANSITIONEND, callback);
         } else {
           callback();
@@ -533,10 +551,8 @@
     resetImage: function () {
       this.$image.remove();
       this.$image = null;
-    }
-  });
+    },
 
-  $.extend(prototype, {
     start: function (e) {
       var target = e.target;
 
@@ -582,7 +598,7 @@
           break;
 
         case 'one-to-one':
-          if (this.image.ratio === 1) {
+          if (image.ratio === 1) {
             this.zoomTo(this.initialImage.ratio);
           } else {
             this.zoomTo(1);
@@ -668,7 +684,7 @@
       var parentHeight = $parent.height();
       var filled = e.data && e.data.filled;
 
-      getImageSize(image, $.proxy(function (naturalWidth, naturalHeight) {
+      getImageSize(image, function (naturalWidth, naturalHeight) {
         var aspectRatio = naturalWidth / naturalHeight;
         var width = parentWidth;
         var height = parentHeight;
@@ -693,7 +709,7 @@
           marginLeft: (parentWidth - width) / 2,
           marginTop: (parentHeight - height) / 2
         });
-      }, this));
+      });
     },
 
     resize: function () {
@@ -723,6 +739,17 @@
       }
 
       event.preventDefault();
+
+      // Limit wheel speed to prevent zoom too fast
+      if (this.wheeling) {
+        return;
+      }
+
+      this.wheeling = true;
+
+      setTimeout($.proxy(function () {
+        this.wheeling = false;
+      }, this), 50);
 
       if (e.deltaY) {
         delta = e.deltaY > 0 ? 1 : -1;
@@ -761,6 +788,14 @@
 
           break;
 
+        // (Key: Space)
+        case 32:
+          if (this.isPlayed) {
+            this.stop();
+          }
+
+          break;
+
         // View previous (Key: ←)
         case 37:
           this.prev();
@@ -768,6 +803,10 @@
 
         // Zoom in (Key: ↑)
         case 38:
+
+          // Prevent scroll on Firefox
+          e.preventDefault();
+
           this.zoom(options.zoomRatio, true);
           break;
 
@@ -778,6 +817,10 @@
 
         // Zoom out (Key: ↓)
         case 40:
+
+          // Prevent scroll on Firefox
+          e.preventDefault();
+
           this.zoom(-options.zoomRatio, true);
           break;
 
@@ -902,10 +945,7 @@
 
         this.action = false;
       }
-    }
-  });
-
-  $.extend(prototype, {
+    },
 
     // Show the viewer (only available in modal mode)
     show: function () {
@@ -938,9 +978,8 @@
 
       if (options.transition) {
         this.transitioning = true;
-
-        /* jshint expr:true */
-        $viewer.addClass(CLASS_TRANSITION).get(0).offsetWidth;
+        $viewer.addClass(CLASS_TRANSITION);
+        forceReflow($viewer[0]);
         $viewer.one(EVENT_TRANSITIONEND, $.proxy(this.shown, this)).addClass(CLASS_IN);
       } else {
         $viewer.addClass(CLASS_IN);
@@ -1088,7 +1127,7 @@
       x = num(x);
       y = num(y);
 
-      if (this.isShown && !this.isPlayed && this.options.movable) {
+      if (this.isViewed && !this.isPlayed && this.options.movable) {
         if (isNumber(x)) {
           image.left = x;
           changed = true;
@@ -1144,7 +1183,7 @@
 
       ratio = max(0, ratio);
 
-      if (isNumber(ratio) && this.isShown && !this.isPlayed && (_zoomable || options.zoomable)) {
+      if (isNumber(ratio) && this.isViewed && !this.isPlayed && (_zoomable || options.zoomable)) {
         if (!_zoomable) {
           minZoomRatio = max(minZoomRatio, options.minZoomRatio);
           maxZoomRatio = min(maxZoomRatio, options.maxZoomRatio);
@@ -1190,7 +1229,7 @@
 
       degree = num(degree);
 
-      if (isNumber(degree) && this.isShown && !this.isPlayed && this.options.rotatable) {
+      if (isNumber(degree) && this.isViewed && !this.isPlayed && this.options.rotatable) {
         image.rotate = degree;
         this.renderImage();
       }
@@ -1215,7 +1254,7 @@
       scaleX = num(scaleX);
       scaleY = num(scaleY);
 
-      if (this.isShown && !this.isPlayed && this.options.scalable) {
+      if (this.isViewed && !this.isPlayed && this.options.scalable) {
         if (isNumber(scaleX)) {
           image.scaleX = scaleX;
           changed = true;
@@ -1402,35 +1441,41 @@
             CLASS_TRANSITION
           ].join(' ');
 
-      if (!this.isShown || this.isPlayed || !options.tooltip) {
+      if (!this.isViewed || this.isPlayed || !options.tooltip) {
         return;
       }
 
       $tooltip.text(round(image.ratio * 100) + '%');
 
-      if (!this.fading) {
+      if (!this.tooltiping) {
         if (options.transition) {
+          if (this.fading) {
+            $tooltip.trigger(EVENT_TRANSITIONEND);
+          }
 
-          /* jshint expr:true */
-          $tooltip.addClass(classes).get(0).offsetWidth;
+          $tooltip.addClass(classes);
+          forceReflow($tooltip[0]);
           $tooltip.addClass(CLASS_IN);
         } else {
           $tooltip.addClass(CLASS_SHOW);
         }
       } else {
-        clearTimeout(this.fading);
+        clearTimeout(this.tooltiping);
       }
 
-      this.fading = setTimeout($.proxy(function () {
+      this.tooltiping = setTimeout($.proxy(function () {
         if (options.transition) {
-          $tooltip.one(EVENT_TRANSITIONEND, function () {
+          $tooltip.one(EVENT_TRANSITIONEND, $.proxy(function () {
             $tooltip.removeClass(classes);
-          }).removeClass(CLASS_IN);
+            this.fading = false;
+          }, this)).removeClass(CLASS_IN);
+
+          this.fading = true;
         } else {
           $tooltip.removeClass(CLASS_SHOW);
         }
 
-        this.fading = false;
+        this.tooltiping = false;
       }, this), 1000);
     },
 
@@ -1445,7 +1490,7 @@
 
     // Reset the image to its initial state.
     reset: function () {
-      if (this.isShown && !this.isPlayed) {
+      if (this.isViewed && !this.isPlayed) {
         this.image = $.extend({}, this.initialImage);
         this.renderImage();
       }
@@ -1468,10 +1513,7 @@
 
       this.unbuild();
       $this.removeData(NAMESPACE);
-    }
-  });
-
-  $.extend(prototype, {
+    },
 
     // A shortcut for triggering custom events
     trigger: function (type, data) {
@@ -1593,9 +1635,7 @@
       return (image.left >= 0 && image.top >= 0 && image.width <= viewer.width &&
         image.height <= viewer.height);
     }
-  });
-
-  $.extend(Viewer.prototype, prototype);
+  };
 
   Viewer.DEFAULTS = {
     // Enable inline mode
@@ -1671,7 +1711,9 @@
     show: null,
     shown: null,
     hide: null,
-    hidden: null
+    hidden: null,
+    view: null,
+    viewed: null
   };
 
   Viewer.TEMPLATE = (

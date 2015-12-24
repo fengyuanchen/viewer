@@ -1,15 +1,24 @@
 # Changelog
 
 
+## 0.3.0 (Dec 24, 2015)
+
+- Add 2 new options: "view" and "viewed"
+- Add 2 new events: "view" and "viewed"
+- Add keyboard support: stop playing when tap the `Space` key
+- Fix lost transition after call full method in inline mode
+- Fix incorrect tooltip after switch image quickly
+
+
 ## 0.2.0 (Oct 18, 2015)
 
 - Added one new method: "moveTo"
-- Improved the image loading and showing.
+- Improved the image loading and showing
 
 
 ## 0.1.1 (Oct 7, 2015)
 
-- Fixed the issue of modal closing after zoomed in and zoomed out.
+- Fixed the issue of modal closing after zoomed in and zoomed out
 
 
 ## 0.1.0 (Sep 2, 2015)

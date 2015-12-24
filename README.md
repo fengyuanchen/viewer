@@ -1,8 +1,26 @@
-# [Viewer](https://github.com/fengyuanchen/viewer)
+# Viewer
 
 > A simple jQuery image viewing plugin.
 
-- [Demo](http://fengyuanchen.github.io/viewer)
+- [Homepage](http://fengyuanchen.github.io/viewer)
+- [Viewer without jQuery](https://github.com/fengyuanchen/viewerjs)
+
+
+
+## Table of contents
+
+  - [Features](#features)
+  - [Main](#main)
+  - [Getting started](#getting-started)
+  - [Keyboard support](#keyboard-support)
+  - [Options](#options)
+  - [Methods](#methods)
+  - [Events](#events)
+  - [No conflict](#no-conflict)
+  - [Browser support](#browser-support)
+  - [Contributing](#contributing)
+  - [Versioning](#versioning)
+  - [License](#license)
 
 
 
@@ -27,7 +45,7 @@
 dist/
 ├── viewer.css     ( 8 KB)
 ├── viewer.min.css ( 7 KB)
-├── viewer.js      (44 KB)
+├── viewer.js      (45 KB)
 └── viewer.min.js  (19 KB)
 ```
 
@@ -92,12 +110,16 @@ $('.images').viewer();
 > Only available in modal mode.
 
 - `Esc`: Exit full screen or stop play.
+- `Space`: Stop play.
 - `←`: View the previous image.
 - `→`: View the next image.
 - `↑`: Zoom in the image.
 - `↓`: Zoom out the image.
 - `Ctrl + 0`: Zoom out to initial size.
 - `Ctrl + 1`: Zoom in to natural size.
+
+
+[⬆ back to top](#table-of-contents)
 
 
 
@@ -322,25 +344,44 @@ A shortcut of the "hide.viewer" event.
 A shortcut of the "hidden.viewer" event.
 
 
+### view
+
+- Type: `Function`
+- Default: `null`
+
+A shortcut of the "view.viewer" event.
+
+
+### viewed
+
+- Type: `Function`
+- Default: `null`
+
+A shortcut of the "viewed.viewer" event.
+
+
+[⬆ back to top](#table-of-contents)
+
+
 
 ## Methods
 
-As there is an **asynchronous** process when load the image(s), you **should call most of the methods after shown (modal mode) or built (inline mode)**, except "show" (modal mode) and "destroy".
+As there are some **asynchronous** processes when start the viewer, you should call a method only when it is available, see the following **lifecycle**:
 
 ```js
-// Modal mode
 $().viewer({
+  built: function () {
+    // 2 methods are available here: "show" and "destroy".
+  },
   shown: function () {
-    $().viewer('method', argument1, , argument2, ..., argumentN);
+    // 9 methods are available here: "hide", "view", "prev", "next", "play", "stop", "full", "exit" and "destroy".
+  },
+  viewed: function () {
+    // All methods are available here except "show".
+    $(this).viewer('rotate', 90).viewer('scale', -1, -1);
   }
 }
 
-// Inline mode
-$().viewer({
-  built: function () {
-    $().viewer('method', argument1, , argument2, ..., argumentN);
-  }
-}
 ```
 
 
@@ -468,7 +509,7 @@ $().viewer('zoomTo', 1); // Zoom to natural size (100%)
 
 Rotate the image with a relative degree.
 
-> Requires [CSS3 2D Transforms](http://caniuse.com/transforms2d) support (IE 9+).
+> Requires [CSS3 2D Transforms](https://developer.mozilla.org/en-US/docs/Web/CSS/transform) support ([IE 9+](http://caniuse.com/transforms2d)).
 
 ```js
 $().viewer('rotate', 90);
@@ -483,7 +524,7 @@ $().viewer('rotate', -90);
 
 Rotate the image to an absolute degree.
 
-> Requires [CSS3 2D Transforms](http://caniuse.com/transforms2d) support (IE 9+).
+> Requires [CSS3 2D Transforms](https://developer.mozilla.org/en-US/docs/Web/CSS/transform) support ([IE 9+](http://caniuse.com/transforms2d)).
 
 ```js
 $().viewer('rotateTo', 0); // Reset to zero degree
@@ -506,7 +547,7 @@ $().viewer('rotateTo', 360); // Rotate a full round
 
 Scale the image.
 
-> Requires [CSS3 2D Transforms](http://caniuse.com/transforms2d) support (IE 9+).
+> Requires [CSS3 2D Transforms](https://developer.mozilla.org/en-US/docs/Web/CSS/transform) support ([IE 9+](http://caniuse.com/transforms2d)).
 
 ```js
 $().viewer('scale', -1); // Flip both horizontal and vertical
@@ -524,7 +565,7 @@ $().viewer('scale', 1, -1); // Flip vertical
 
 Scale the abscissa of the image.
 
-> Requires [CSS3 2D Transforms](http://caniuse.com/transforms2d) support (IE 9+).
+> Requires [CSS3 2D Transforms](https://developer.mozilla.org/en-US/docs/Web/CSS/transform) support ([IE 9+](http://caniuse.com/transforms2d)).
 
 ```js
 $().viewer('scaleX', -1); // Flip horizontal
@@ -541,7 +582,7 @@ $().viewer('scaleX', -1); // Flip horizontal
 
 Scale the ordinate of the image.
 
-> Requires [CSS3 2D Transforms](http://caniuse.com/transforms2d) support (IE 9+).
+> Requires [CSS3 2D Transforms](https://developer.mozilla.org/en-US/docs/Web/CSS/transform) support ([IE 9+](http://caniuse.com/transforms2d)).
 
 ```js
 $().viewer('scaleY', -1); // Flip vertical
@@ -562,14 +603,14 @@ Stop play.
 
 Enter modal mode.
 
-> only available in inline mode.
+> Only available in inline mode.
 
 
 ### exit()
 
 Exit  modal mode.
 
-> only available in inline mode.
+> Only available in inline mode.
 
 
 ### tooltip()
@@ -594,12 +635,15 @@ Reset the image to its initial state.
 Destroy the viewer and remove the instance.
 
 
+[⬆ back to top](#table-of-contents)
+
+
 
 ## Events
 
 ### build.viewer
 
-This event fires when a viewer instance start to build.
+This event fires when a viewer instance starts to build.
 
 
 ### built.viewer
@@ -609,30 +653,43 @@ This event fires when a viewer instance has built.
 
 ### show.viewer
 
-This event fires when a viewer element start to show.
+This event fires when the viewer modal starts to show.
 
-> only available in modal mode.
+> Only available in modal mode.
 
 
 ### shown.viewer
 
-This event fires when a viewer element has shown.
+This event fires when the viewer modal has shown.
 
-> only available in modal mode.
+> Only available in modal mode.
 
 
 ### hide.viewer
 
-This event fires when a viewer element start to hide.
+This event fires when the viewer modal starts to hide.
 
-> only available in modal mode.
+> Only available in modal mode.
 
 
 ### hidden.viewer
 
-This event fires when a viewer element has hidden.
+This event fires when the viewer modal has hidden.
 
-> only available in modal mode.
+> Only available in modal mode.
+
+
+### view.viewer
+
+This event fires when a viewer starts to show (view) an image.
+
+
+### viewed.viewer
+
+This event fires when a viewer has shown (viewed) an image.
+
+
+[⬆ back to top](#table-of-contents)
 
 
 
@@ -648,6 +705,12 @@ If you have to use other plugin with the same namespace, just call the `$.fn.vie
   // Code that uses other plugin's "$().viewer" can follow here.
 </script>
 ```
+
+
+
+## Contributing
+
+Please read through our [contributing guidelines](CONTRIBUTING.md).
 
 
 
@@ -672,3 +735,6 @@ Maintained under the [Semantic Versioning guidelines](http://semver.org/).
 ## License
 
 [MIT](http://opensource.org/licenses/MIT) © [Fengyuan Chen](http://chenfengyuan.com)
+
+
+[⬆ back to top](#table-of-contents)

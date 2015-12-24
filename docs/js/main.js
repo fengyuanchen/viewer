@@ -6,18 +6,33 @@ $(function () {
   var $images = $('.docs-pictures');
   var $toggles = $('.docs-toggles');
   var $buttons = $('.docs-buttons');
-  var handler = function (e) {
-        console.log(e.type);
-      };
   var options = {
         // inline: true,
         url: 'data-original',
-        build: handler,
-        built: handler,
-        show: handler,
-        shown: handler,
-        hide: handler,
-        hidden: handler
+        build: function (e) {
+          console.log(e.type);
+        },
+        built: function (e) {
+          console.log(e.type);
+        },
+        show: function (e) {
+          console.log(e.type);
+        },
+        shown: function (e) {
+          console.log(e.type);
+        },
+        hide: function (e) {
+          console.log(e.type);
+        },
+        hidden: function (e) {
+          console.log(e.type);
+        },
+        view: function (e) {
+          console.log(e.type);
+        },
+        viewed: function (e) {
+          console.log(e.type);
+        }
       };
 
   function toggleButtons(mode) {
@@ -31,12 +46,30 @@ $(function () {
   }
 
   $images.on({
-    'build.viewer': handler,
-    'built.viewer': handler,
-    'show.viewer': handler,
-    'shown.viewer': handler,
-    'hide.viewer': handler,
-    'hidden.viewer': handler
+    'build.viewer': function (e) {
+      console.log(e.type);
+    },
+    'built.viewer':  function (e) {
+      console.log(e.type);
+    },
+    'show.viewer':  function (e) {
+      console.log(e.type);
+    },
+    'shown.viewer':  function (e) {
+      console.log(e.type);
+    },
+    'hide.viewer':  function (e) {
+      console.log(e.type);
+    },
+    'hidden.viewer': function (e) {
+      console.log(e.type);
+    },
+    'view.viewer':  function (e) {
+      console.log(e.type);
+    },
+    'viewed.viewer': function (e) {
+      console.log(e.type);
+    }
   }).viewer(options);
 
   toggleButtons(options.inline ? 'inline' : 'modal');
