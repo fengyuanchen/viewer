@@ -23,7 +23,7 @@
       $viewer = this.$viewer.removeClass(CLASS_HIDE);
 
       this.$element.one(EVENT_SHOWN, $.proxy(function () {
-        this.view((this.target ? this.$images.index(this.target) : 0) || this.index);
+        this.view(this.target ? this.$images.index(this.target) : this.index);
         this.target = false;
       }, this));
 
