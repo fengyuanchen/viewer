@@ -115,9 +115,10 @@
         }
 
         // Make the image visible if it fails to load within 1s
-        this.timeout = setTimeout(function () {
+        this.timeout = setTimeout($.proxy(function () {
           $image.removeClass(CLASS_INVISIBLE);
-        }, 1000);
+          this.timeout = false;
+        }, this), 1000);
       }
 
       $title.empty();
