@@ -204,7 +204,7 @@
         delta = e.detail > 0 ? 1 : -1;
       }
 
-      this.zoom(-delta * ratio, true);
+      this.zoom(-delta * ratio, true, event);
     },
 
     keydown: function (e) {
@@ -374,7 +374,7 @@
         this.endX = e.pageX || originalEvent && originalEvent.pageX;
         this.endY = e.pageY || originalEvent && originalEvent.pageY;
 
-        this.change();
+        this.change(event);
       }
     },
 

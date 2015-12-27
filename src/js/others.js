@@ -63,7 +63,7 @@
       }
     },
 
-    change: function () {
+    change: function (event) {
       var offsetX = this.endX - this.startX;
       var offsetY = this.endY - this.startY;
 
@@ -86,7 +86,7 @@
             abs(this.startY - this.startY2),
             abs(this.endX - this.endX2),
             abs(this.endY - this.endY2)
-          ));
+          ), false, event);
 
           this.startX2 = this.endX2;
           this.startY2 = this.endY2;

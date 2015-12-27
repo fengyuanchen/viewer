@@ -60,7 +60,7 @@
         this.$image.one(EVENT_TRANSITIONEND, $.proxy(function () {
           $viewer.one(EVENT_TRANSITIONEND, $.proxy(this.hidden, this)).removeClass(CLASS_IN);
         }, this));
-        this.zoomTo(0, false, true);
+        this.zoomTo(0, false, false, true);
       } else {
         $viewer.removeClass(CLASS_IN);
         this.hidden();
@@ -201,8 +201,9 @@
      *
      * @param {Number} ratio
      * @param {Boolean} hasTooltip (optional)
+     * @param {jQuery Event} _event (private)
      */
-    zoom: function (ratio, hasTooltip) {
+    zoom: function (ratio, hasTooltip, _event) {
       var image = this.image;
 
       ratio = num(ratio);
@@ -213,7 +214,7 @@
         ratio = 1 + ratio;
       }
 
-      this.zoomTo(image.width * ratio / image.naturalWidth, hasTooltip);
+      this.zoomTo(image.width * ratio / image.naturalWidth, hasTooltip, _event);
     },
 
     /**
@@ -221,17 +222,21 @@
      *
      * @param {Number} ratio
      * @param {Boolean} hasTooltip (optional)
+     * @param {jQuery Event} _event (private)
      * @param {Boolean} _zoomable (private)
      */
-    zoomTo: function (ratio, hasTooltip, _zoomable) {
+    zoomTo: function (ratio, hasTooltip, _event, _zoomable) {
       var options = this.options;
       var minZoomRatio = 0.01;
       var maxZoomRatio = 100;
       var image = this.image;
       var width = image.width;
       var height = image.height;
+      var originalEvent;
       var newWidth;
       var newHeight;
+      var offset;
+      var center;
 
       ratio = max(0, ratio);
 
@@ -248,8 +253,28 @@
 
         newWidth = image.naturalWidth * ratio;
         newHeight = image.naturalHeight * ratio;
-        image.left -= (newWidth - width) / 2;
-        image.top -= (newHeight - height) / 2;
+
+        if (_event && (originalEvent = _event.originalEvent)) {
+          offset = this.$viewer.offset();
+          center = originalEvent.touches ? getTouchesCenter(originalEvent.touches) : {
+            pageX: _event.pageX || originalEvent.pageX || 0,
+            pageY: _event.pageY || originalEvent.pageY || 0
+          };
+
+          // Zoom from the triggering point of the event
+          image.left -= (newWidth - width) * (
+            ((center.pageX - offset.left) - image.left) / width
+          );
+          image.top -= (newHeight - height) * (
+            ((center.pageY - offset.top) - image.top) / height
+          );
+        } else {
+
+          // Zoom from the center of the image
+          image.left -= (newWidth - width) / 2;
+          image.top -= (newHeight - height) / 2;
+        }
+
         image.width = newWidth;
         image.height = newHeight;
         image.ratio = ratio;
