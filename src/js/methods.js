@@ -559,9 +559,9 @@
     // Toggle the image size between its natural size and initial size.
     toggle: function () {
       if (this.image.ratio === 1) {
-        this.zoomTo(this.initialImage.ratio);
+        this.zoomTo(this.initialImage.ratio, true);
       } else {
-        this.zoomTo(1);
+        this.zoomTo(1, true);
       }
     },
 
