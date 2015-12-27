@@ -43,12 +43,7 @@
           break;
 
         case 'one-to-one':
-          if (image.ratio === 1) {
-            this.zoomTo(this.initialImage.ratio);
-          } else {
-            this.zoomTo(1);
-          }
-
+          this.toggle();
           break;
 
         case 'reset':
@@ -277,12 +272,7 @@
         case 49:
           if (e.ctrlKey || e.shiftKey) {
             e.preventDefault();
-
-            if (this.image.ratio === 1) {
-              this.zoomTo(this.initialImage.ratio);
-            } else {
-              this.zoomTo(1);
-            }
+            this.toggle();
           }
 
           break;
