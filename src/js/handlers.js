@@ -170,7 +170,7 @@
     },
 
     wheel: function (event) {
-      var e = event.originalEvent;
+      var e = event.originalEvent || event;
       var ratio = num(this.options.zoomRatio) || 0.1;
       var delta = 1;
 
