@@ -22,18 +22,18 @@ body {
 
 .navbar-toggle:hover,
 .navbar-toggle:focus {
-  border-color: #337ab7;
+  border-color: #0074d9;
 }
 
 .navbar-toggle .icon-bar {
-  background-color: #337ab7;
+  background-color: #0074d9;
 }
 
 
 /* Jumbotron */
 
 .docs-jumbotron {
-  background-color: #3f51b5;
+  background-color: #0074d9;
   color: #fff;
 }
 
