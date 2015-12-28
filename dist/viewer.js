@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.3.0
+ * Viewer v0.3.1
  * https://github.com/fengyuanchen/viewer
  *
  * Copyright (c) 2015 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2015-12-24T09:51:24.343Z
+ * Date: 2015-12-28T03:12:02.123Z
  */
 
 (function (factory) {
@@ -153,6 +153,27 @@
     };
 
     newImage.src = image.src;
+  }
+
+  function getTouchesCenter(touches) {
+    var length = touches.length;
+    var pageX = 0;
+    var pageY = 0;
+
+    if (length) {
+      $.each(touches, function (i, touch) {
+        pageX += touch.pageX;
+        pageY += touch.pageY;
+      });
+
+      pageX /= length;
+      pageY /= length;
+    }
+
+    return {
+      pageX: pageX,
+      pageY: pageY
+    };
   }
 
   function Viewer(element, options) {
@@ -598,12 +619,7 @@
           break;
 
         case 'one-to-one':
-          if (image.ratio === 1) {
-            this.zoomTo(this.initialImage.ratio);
-          } else {
-            this.zoomTo(1);
-          }
-
+          this.toggle();
           break;
 
         case 'reset':
@@ -730,7 +746,7 @@
     },
 
     wheel: function (event) {
-      var e = event.originalEvent;
+      var e = event.originalEvent || event;
       var ratio = num(this.options.zoomRatio) || 0.1;
       var delta = 1;
 
@@ -759,7 +775,7 @@
         delta = e.detail > 0 ? 1 : -1;
       }
 
-      this.zoom(-delta * ratio, true);
+      this.zoom(-delta * ratio, true, event);
     },
 
     keydown: function (e) {
@@ -832,12 +848,7 @@
         case 49:
           if (e.ctrlKey || e.shiftKey) {
             e.preventDefault();
-
-            if (this.image.ratio === 1) {
-              this.zoomTo(this.initialImage.ratio);
-            } else {
-              this.zoomTo(1);
-            }
+            this.toggle();
           }
 
           break;
@@ -929,7 +940,7 @@
         this.endX = e.pageX || originalEvent && originalEvent.pageX;
         this.endY = e.pageY || originalEvent && originalEvent.pageY;
 
-        this.change();
+        this.change(event);
       }
     },
 
@@ -972,7 +983,7 @@
       $viewer = this.$viewer.removeClass(CLASS_HIDE);
 
       this.$element.one(EVENT_SHOWN, $.proxy(function () {
-        this.view((this.target ? this.$images.index(this.target) : 0) || this.index);
+        this.view(this.target ? this.$images.index(this.target) : this.index);
         this.target = false;
       }, this));
 
@@ -1009,7 +1020,7 @@
         this.$image.one(EVENT_TRANSITIONEND, $.proxy(function () {
           $viewer.one(EVENT_TRANSITIONEND, $.proxy(this.hidden, this)).removeClass(CLASS_IN);
         }, this));
-        this.zoomTo(0, false, true);
+        this.zoomTo(0, false, false, true);
       } else {
         $viewer.removeClass(CLASS_IN);
         this.hidden();
@@ -1064,9 +1075,10 @@
         }
 
         // Make the image visible if it fails to load within 1s
-        this.timeout = setTimeout(function () {
+        this.timeout = setTimeout($.proxy(function () {
           $image.removeClass(CLASS_INVISIBLE);
-        }, 1000);
+          this.timeout = false;
+        }, this), 1000);
       }
 
       $title.empty();
@@ -1149,8 +1161,9 @@
      *
      * @param {Number} ratio
      * @param {Boolean} hasTooltip (optional)
+     * @param {jQuery Event} _event (private)
      */
-    zoom: function (ratio, hasTooltip) {
+    zoom: function (ratio, hasTooltip, _event) {
       var image = this.image;
 
       ratio = num(ratio);
@@ -1161,7 +1174,7 @@
         ratio = 1 + ratio;
       }
 
-      this.zoomTo(image.width * ratio / image.naturalWidth, hasTooltip);
+      this.zoomTo(image.width * ratio / image.naturalWidth, hasTooltip, _event);
     },
 
     /**
@@ -1169,17 +1182,21 @@
      *
      * @param {Number} ratio
      * @param {Boolean} hasTooltip (optional)
+     * @param {jQuery Event} _event (private)
      * @param {Boolean} _zoomable (private)
      */
-    zoomTo: function (ratio, hasTooltip, _zoomable) {
+    zoomTo: function (ratio, hasTooltip, _event, _zoomable) {
       var options = this.options;
       var minZoomRatio = 0.01;
       var maxZoomRatio = 100;
       var image = this.image;
       var width = image.width;
       var height = image.height;
+      var originalEvent;
       var newWidth;
       var newHeight;
+      var offset;
+      var center;
 
       ratio = max(0, ratio);
 
@@ -1196,8 +1213,28 @@
 
         newWidth = image.naturalWidth * ratio;
         newHeight = image.naturalHeight * ratio;
-        image.left -= (newWidth - width) / 2;
-        image.top -= (newHeight - height) / 2;
+
+        if (_event && (originalEvent = _event.originalEvent)) {
+          offset = this.$viewer.offset();
+          center = originalEvent.touches ? getTouchesCenter(originalEvent.touches) : {
+            pageX: _event.pageX || originalEvent.pageX || 0,
+            pageY: _event.pageY || originalEvent.pageY || 0
+          };
+
+          // Zoom from the triggering point of the event
+          image.left -= (newWidth - width) * (
+            ((center.pageX - offset.left) - image.left) / width
+          );
+          image.top -= (newHeight - height) * (
+            ((center.pageY - offset.top) - image.top) / height
+          );
+        } else {
+
+          // Zoom from the center of the image
+          image.left -= (newWidth - width) / 2;
+          image.top -= (newHeight - height) / 2;
+        }
+
         image.width = newWidth;
         image.height = newHeight;
         image.ratio = ratio;
@@ -1482,9 +1519,9 @@
     // Toggle the image size between its natural size and initial size.
     toggle: function () {
       if (this.image.ratio === 1) {
-        this.zoomTo(this.initialImage.ratio);
+        this.zoomTo(this.initialImage.ratio, true);
       } else {
-        this.zoomTo(1);
+        this.zoomTo(1, true);
       }
     },
 
@@ -1580,7 +1617,7 @@
       }
     },
 
-    change: function () {
+    change: function (event) {
       var offsetX = this.endX - this.startX;
       var offsetY = this.endY - this.startY;
 
@@ -1603,7 +1640,7 @@
             abs(this.startY - this.startY2),
             abs(this.endX - this.endX2),
             abs(this.endY - this.endY2)
-          ));
+          ), false, event);
 
           this.startX2 = this.endX2;
           this.startY2 = this.endY2;

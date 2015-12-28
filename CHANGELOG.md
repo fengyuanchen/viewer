@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.3.1 (Dec 28, 2015)
+
+- Supports to zoom from event triggering point.
+- Fix a bug of the index of viewing image.
+
+
 ## 0.3.0 (Dec 24, 2015)
 
 - Add 2 new options: "view" and "viewed"
