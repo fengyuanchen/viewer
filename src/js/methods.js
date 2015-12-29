@@ -647,7 +647,6 @@
           this.unbind();
         }
 
-        this.$images.removeClass(CLASS_TOGGLE);
         $this.off(EVENT_CLICK, this.start);
       }
 

@@ -45,7 +45,6 @@
           }
         });
       } else {
-        $images.addClass(CLASS_TOGGLE);
         $this.on(EVENT_CLICK, $.proxy(this.start, this));
       }
     },

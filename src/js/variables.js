@@ -6,7 +6,6 @@
   var ELEMENT_VIEWER = document.createElement(NAMESPACE);
 
   // Classes
-  var CLASS_TOGGLE = 'viewer-toggle';
   var CLASS_FIXED = 'viewer-fixed';
   var CLASS_OPEN = 'viewer-open';
   var CLASS_SHOW = 'viewer-show';

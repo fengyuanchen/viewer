@@ -1,7 +1,7 @@
     start: function (e) {
       var target = e.target;
 
-      if ($(target).hasClass(CLASS_TOGGLE)) {
+      if ($(target).is('img')) {
         this.target = target;
         this.show();
       }
