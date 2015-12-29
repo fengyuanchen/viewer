@@ -71,11 +71,11 @@
           break;
 
         case 'flip-horizontal':
-          this.scale(-image.scaleX || -1, image.scaleY || 1);
+          this.scaleX(-image.scaleX || -1);
           break;
 
         case 'flip-vertical':
-          this.scale(image.scaleX || 1, -image.scaleY || -1);
+          this.scaleY(-image.scaleY || -1);
           break;
 
         default:
