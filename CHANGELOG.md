@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.4.0 (Jan 1, 2016)
+
+- Added "update" method for update image dynamically.
+- Hides title and toolbar on small screen (width < 768px).
+
+
 ## 0.3.1 (Dec 28, 2015)
 
 - Supports to zoom from event triggering point.

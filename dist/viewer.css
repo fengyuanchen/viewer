@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.3.1
+ * Viewer v0.4.0
  * https://github.com/fengyuanchen/viewer
  *
- * Copyright (c) 2015 Fengyuan Chen
+ * Copyright (c) 2015-2016 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2015-12-28T03:11:40.827Z
+ * Date: 2016-01-01T04:21:19.666Z
  */
 .viewer-zoom-in:before,
 .viewer-zoom-out:before,
@@ -253,6 +253,7 @@
 }
 
 .viewer-toolbar {
+  display: none;
   overflow: hidden; 
 
   width: 280px;
@@ -291,6 +292,11 @@
 .viewer-toolbar > .viewer-play:before {
   margin: 5px;
 }
+@media (min-width: 768px) {
+  .viewer-toolbar {
+    display: block;
+  }
+}
 
 .viewer-tooltip {
   font-size: 12px;
@@ -319,7 +325,7 @@
   font-size: 12px;
   line-height: 1;
 
-  display: inline-block;
+  display: none;
   overflow: hidden;
 
   max-width: 90%;
@@ -337,6 +343,11 @@
   opacity: 1;
 
   filter: alpha(opacity=100);
+}
+@media (min-width: 768px) {
+  .viewer-title {
+    display: inline-block;
+  }
 }
 
 .viewer-button {
@@ -379,12 +390,6 @@
 
 .viewer-invisible {
   visibility: hidden;
-}
-
-.viewer-toggle {
-  cursor: pointer;
-  cursor: -webkit-zoom-in;
-  cursor:         zoom-in;
 }
 
 .viewer-move {

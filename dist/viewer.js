@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.3.1
+ * Viewer v0.4.0
  * https://github.com/fengyuanchen/viewer
  *
- * Copyright (c) 2015 Fengyuan Chen
+ * Copyright (c) 2015-2016 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2015-12-28T03:12:02.123Z
+ * Date: 2016-01-01T04:21:22.266Z
  */
 
 (function (factory) {
@@ -31,7 +31,6 @@
   var ELEMENT_VIEWER = document.createElement(NAMESPACE);
 
   // Classes
-  var CLASS_TOGGLE = 'viewer-toggle';
   var CLASS_FIXED = 'viewer-fixed';
   var CLASS_OPEN = 'viewer-open';
   var CLASS_SHOW = 'viewer-show';
@@ -245,7 +244,6 @@
           }
         });
       } else {
-        $images.addClass(CLASS_TOGGLE);
         $this.on(EVENT_CLICK, $.proxy(this.start, this));
       }
     },
@@ -577,7 +575,7 @@
     start: function (e) {
       var target = e.target;
 
-      if ($(target).hasClass(CLASS_TOGGLE)) {
+      if ($(target).is('img')) {
         this.target = target;
         this.show();
       }
@@ -647,11 +645,11 @@
           break;
 
         case 'flip-horizontal':
-          this.scale(-image.scaleX || -1, image.scaleY || 1);
+          this.scaleX(-image.scaleX || -1);
           break;
 
         case 'flip-vertical':
-          this.scale(image.scaleX || 1, -image.scaleY || -1);
+          this.scaleY(-image.scaleY || -1);
           break;
 
         default:
@@ -1057,7 +1055,11 @@
       alt = $img.attr('alt');
 
       this.$image = $image = $('<img src="' + url + '" alt="' + alt + '">');
-      this.$items.eq(this.index).removeClass(CLASS_ACTIVE);
+
+      if (this.isViewed) {
+        this.$items.eq(this.index).removeClass(CLASS_ACTIVE);
+      }
+
       $item.addClass(CLASS_ACTIVE);
 
       this.isViewed = false;
@@ -1516,7 +1518,7 @@
       }, this), 1000);
     },
 
-    // Toggle the image size between its natural size and initial size.
+    // Toggle the image size between its natural size and initial size
     toggle: function () {
       if (this.image.ratio === 1) {
         this.zoomTo(this.initialImage.ratio, true);
@@ -1525,11 +1527,70 @@
       }
     },
 
-    // Reset the image to its initial state.
+    // Reset the image to its initial state
     reset: function () {
       if (this.isViewed && !this.isPlayed) {
         this.image = $.extend({}, this.initialImage);
         this.renderImage();
+      }
+    },
+
+    // Update viewer when images changed
+    update: function () {
+      var $this = this.$element;
+      var $images = this.$images;
+      var indexes = [];
+      var index;
+
+      if (this.isImg) {
+
+        // Destroy viewer if the target image was deleted
+        if (!$this.parent().length) {
+          return this.destroy();
+        }
+      } else {
+        this.$images = $images = $this.find(SELECTOR_IMG);
+        this.length = $images.length;
+      }
+
+      if (this.isBuilt) {
+        $.each(this.$items, function (i) {
+          var img = $(this).find('img')[0];
+          var image = $images[i];
+
+          if (image) {
+            if (image.src !== img.src) {
+              indexes.push(i);
+            }
+          } else {
+            indexes.push(i);
+          }
+        });
+
+        this.$list.width('auto');
+        this.initList();
+
+        if (this.isShown) {
+          if (this.length) {
+            if (this.isViewed) {
+              index = $.inArray(this.index, indexes);
+
+              if (index >= 0) {
+                this.isViewed = false;
+                this.view(max(this.index - (index + 1), 0));
+              } else {
+                this.$items.eq(this.index).addClass(CLASS_ACTIVE);
+              }
+            }
+          } else {
+            this.$image = null;
+            this.isViewed = false;
+            this.index = 0;
+            this.image = null;
+            this.$canvas.empty();
+            this.$title.empty();
+          }
+        }
       }
     },
 
@@ -1544,7 +1605,6 @@
           this.unbind();
         }
 
-        this.$images.removeClass(CLASS_TOGGLE);
         $this.off(EVENT_CLICK, this.start);
       }
 
