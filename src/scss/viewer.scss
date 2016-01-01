@@ -2,7 +2,7 @@
  * Viewer v@VERSION
  * https://github.com/fengyuanchen/viewer
  *
- * Copyright (c) @YEAR Fengyuan Chen
+ * Copyright (c) 2015-@YEAR Fengyuan Chen
  * Released under the MIT license
  *
  * Date: @DATE
