@@ -385,7 +385,7 @@
       }
 
       if (options.fullscreen) {
-        this.fullscreen();
+        this.requestFullscreen();
       }
 
       this.isPlayed = true;
@@ -434,6 +434,10 @@
     stop: function () {
       if (!this.isPlayed) {
         return;
+      }
+
+      if (this.options.fullscreen) {
+        this.exitFullscreen();
       }
 
       this.isPlayed = false;

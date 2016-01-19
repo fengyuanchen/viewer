@@ -45,7 +45,7 @@
       this.trigger(EVENT_HIDDEN);
     },
 
-    fullscreen: function () {
+    requestFullscreen: function () {
       var documentElement = document.documentElement;
 
       if (this.isFulled && !document.fullscreenElement && !document.mozFullScreenElement &&
@@ -59,6 +59,20 @@
           documentElement.mozRequestFullScreen();
         } else if (documentElement.webkitRequestFullscreen) {
           documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      }
+    },
+
+    exitFullscreen: function () {
+      if (this.isFulled) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
         }
       }
     },
