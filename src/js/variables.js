@@ -10,6 +10,9 @@
   var CLASS_OPEN = 'viewer-open';
   var CLASS_SHOW = 'viewer-show';
   var CLASS_HIDE = 'viewer-hide';
+  var CLASS_HIDE_XS_DOWN = 'viewer-hide-xs-down';
+  var CLASS_HIDE_SM_DOWN = 'viewer-hide-sm-down';
+  var CLASS_HIDE_MD_DOWN = 'viewer-hide-md-down';
   var CLASS_FADE = 'viewer-fade';
   var CLASS_IN = 'viewer-in';
   var CLASS_MOVE = 'viewer-move';

@@ -94,3 +94,16 @@
       pageY: pageY
     };
   }
+
+  function getResponsiveClass(option) {
+    switch (option) {
+      case 2:
+        return CLASS_HIDE_XS_DOWN;
+
+      case 3:
+        return CLASS_HIDE_SM_DOWN;
+
+      case 4:
+        return CLASS_HIDE_MD_DOWN;
+    }
+  }
