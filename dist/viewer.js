@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.4.0
+ * Viewer v0.5.0
  * https://github.com/fengyuanchen/viewer
  *
  * Copyright (c) 2015-2016 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2016-01-01T04:21:22.266Z
+ * Date: 2016-01-21T09:59:52.834Z
  */
 
 (function (factory) {
@@ -35,6 +35,9 @@
   var CLASS_OPEN = 'viewer-open';
   var CLASS_SHOW = 'viewer-show';
   var CLASS_HIDE = 'viewer-hide';
+  var CLASS_HIDE_XS_DOWN = 'viewer-hide-xs-down';
+  var CLASS_HIDE_SM_DOWN = 'viewer-hide-sm-down';
+  var CLASS_HIDE_MD_DOWN = 'viewer-hide-md-down';
   var CLASS_FADE = 'viewer-fade';
   var CLASS_IN = 'viewer-in';
   var CLASS_MOVE = 'viewer-move';
@@ -175,6 +178,19 @@
     };
   }
 
+  function getResponsiveClass(option) {
+    switch (option) {
+      case 2:
+        return CLASS_HIDE_XS_DOWN;
+
+      case 3:
+        return CLASS_HIDE_SM_DOWN;
+
+      case 4:
+        return CLASS_HIDE_MD_DOWN;
+    }
+  }
+
   function Viewer(element, options) {
     this.$element = $(element);
     this.options = $.extend({}, Viewer.DEFAULTS, $.isPlainObject(options) && options);
@@ -261,8 +277,10 @@
       var $this = this.$element;
       var $parent;
       var $viewer;
-      var $button;
+      var $title;
       var $toolbar;
+      var $navbar;
+      var $button;
 
       if (this.isBuilt) {
         return;
@@ -272,20 +290,25 @@
       this.$viewer = $viewer = $(Viewer.TEMPLATE);
       this.$canvas = $viewer.find('.viewer-canvas');
       this.$footer = $viewer.find('.viewer-footer');
-      this.$title = $viewer.find('.viewer-title').toggleClass(CLASS_HIDE, !options.title);
-      this.$toolbar = $toolbar = $viewer.find('.viewer-toolbar').toggleClass(CLASS_HIDE, !options.toolbar);
-      this.$navbar = $viewer.find('.viewer-navbar').toggleClass(CLASS_HIDE, !options.navbar);
-      this.$button = $button = $viewer.find('.viewer-button').toggleClass(CLASS_HIDE, !options.button);
+      this.$title = $title = $viewer.find('.viewer-title');
+      this.$toolbar = $toolbar = $viewer.find('.viewer-toolbar');
+      this.$navbar = $navbar = $viewer.find('.viewer-navbar');
+      this.$button = $button = $viewer.find('.viewer-button');
       this.$tooltip = $viewer.find('.viewer-tooltip');
       this.$player = $viewer.find('.viewer-player');
       this.$list = $viewer.find('.viewer-list');
 
+      $title.addClass(!options.title ? CLASS_HIDE : getResponsiveClass(options.title));
+
+      $toolbar.addClass(!options.toolbar ? CLASS_HIDE : getResponsiveClass(options.toolbar));
       $toolbar.find('li[class*=zoom]').toggleClass(CLASS_INVISIBLE, !options.zoomable);
       $toolbar.find('li[class*=flip]').toggleClass(CLASS_INVISIBLE, !options.scalable);
 
       if (!options.rotatable) {
         $toolbar.find('li[class*=rotate]').addClass(CLASS_INVISIBLE).appendTo($toolbar);
       }
+
+      $navbar.addClass(!options.navbar ? CLASS_HIDE : getResponsiveClass(options.navbar));
 
       if (options.inline) {
         $button.addClass(CLASS_FULLSCREEN);
@@ -1067,6 +1090,21 @@
       this.image = null;
       this.$canvas.html($image.addClass(CLASS_INVISIBLE));
 
+      // Center current item
+      this.renderList();
+
+      // Clear title
+      $title.empty();
+
+      // Generate title after viewed
+      this.$element.one(EVENT_VIEWED, $.proxy(function () {
+        var image = this.image;
+        var width = image.naturalWidth;
+        var height = image.naturalHeight;
+
+        $title.html(alt + ' (' + width + ' &times; ' + height + ')');
+      }, this));
+
       if ($image[0].complete) {
         this.load();
       } else {
@@ -1082,20 +1120,6 @@
           this.timeout = false;
         }, this), 1000);
       }
-
-      $title.empty();
-
-      // Center current item
-      this.renderList();
-
-      // Show title when viewed
-      this.$element.one(EVENT_VIEWED, $.proxy(function () {
-        var image = this.image;
-        var width = image.naturalWidth;
-        var height = image.naturalHeight;
-
-        $title.html(alt + ' (' + width + ' &times; ' + height + ')');
-      }, this));
     },
 
     // View the previous image
@@ -1343,7 +1367,7 @@
       }
 
       if (options.fullscreen) {
-        this.fullscreen();
+        this.requestFullscreen();
       }
 
       this.isPlayed = true;
@@ -1392,6 +1416,10 @@
     stop: function () {
       if (!this.isPlayed) {
         return;
+      }
+
+      if (this.options.fullscreen) {
+        this.exitFullscreen();
       }
 
       this.isPlayed = false;
@@ -1659,7 +1687,7 @@
       this.trigger(EVENT_HIDDEN);
     },
 
-    fullscreen: function () {
+    requestFullscreen: function () {
       var documentElement = document.documentElement;
 
       if (this.isFulled && !document.fullscreenElement && !document.mozFullScreenElement &&
@@ -1673,6 +1701,20 @@
           documentElement.mozRequestFullScreen();
         } else if (documentElement.webkitRequestFullscreen) {
           documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      }
+    },
+
+    exitFullscreen: function () {
+      if (this.isFulled) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
         }
       }
     },
@@ -1709,10 +1751,12 @@
         case 'switch':
           this.action = 'switched';
 
-          if (offsetX > 1) {
-            this.prev();
-          } else if (offsetX < -1) {
-            this.next();
+          if (abs(offsetX) > abs(offsetY)) {
+            if (offsetX > 1) {
+              this.prev();
+            } else if (offsetX < -1) {
+              this.next();
+            }
           }
 
           break;
