@@ -109,10 +109,12 @@
         case 'switch':
           this.action = 'switched';
 
-          if (offsetX > 1) {
-            this.prev();
-          } else if (offsetX < -1) {
-            this.next();
+          if (abs(offsetX) > abs(offsetY)) {
+            if (offsetX > 1) {
+              this.prev();
+            } else if (offsetX < -1) {
+              this.next();
+            }
           }
 
           break;
