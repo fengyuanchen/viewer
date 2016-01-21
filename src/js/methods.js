@@ -109,6 +109,21 @@
       this.image = null;
       this.$canvas.html($image.addClass(CLASS_INVISIBLE));
 
+      // Center current item
+      this.renderList();
+
+      // Clear title
+      $title.empty();
+
+      // Generate title after viewed
+      this.$element.one(EVENT_VIEWED, $.proxy(function () {
+        var image = this.image;
+        var width = image.naturalWidth;
+        var height = image.naturalHeight;
+
+        $title.html(alt + ' (' + width + ' &times; ' + height + ')');
+      }, this));
+
       if ($image[0].complete) {
         this.load();
       } else {
@@ -124,20 +139,6 @@
           this.timeout = false;
         }, this), 1000);
       }
-
-      $title.empty();
-
-      // Center current item
-      this.renderList();
-
-      // Show title when viewed
-      this.$element.one(EVENT_VIEWED, $.proxy(function () {
-        var image = this.image;
-        var width = image.naturalWidth;
-        var height = image.naturalHeight;
-
-        $title.html(alt + ' (' + width + ' &times; ' + height + ')');
-      }, this));
     },
 
     // View the previous image
