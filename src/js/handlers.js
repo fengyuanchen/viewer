@@ -157,9 +157,12 @@
       this.initViewer();
       this.renderViewer();
       this.renderList();
-      this.initImage($.proxy(function () {
-        this.renderImage();
-      }, this));
+
+      if (this.isViewed) {
+        this.initImage($.proxy(function () {
+          this.renderImage();
+        }, this));
+      }
 
       if (this.isPlayed) {
         this.$player.
