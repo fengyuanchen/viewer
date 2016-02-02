@@ -68,16 +68,10 @@
     },
 
     unbuild: function () {
-      var options = this.options;
-      var $this = this.$element;
-
       if (!this.isBuilt) {
         return;
       }
 
-      if (options.inline) {
-        $this.removeClass(CLASS_HIDE);
-      }
-
+      this.isBuilt = false;
       this.$viewer.remove();
     },
