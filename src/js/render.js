@@ -181,6 +181,8 @@
     },
 
     resetImage: function () {
-      this.$image.remove();
-      this.$image = null;
+      if (this.$image) {
+        this.$image.remove();
+        this.$image = null;
+      }
     },
