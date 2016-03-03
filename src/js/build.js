@@ -35,6 +35,7 @@
       }
 
       $navbar.addClass(!options.navbar ? CLASS_HIDE : getResponsiveClass(options.navbar));
+      $button.toggleClass(CLASS_HIDE, !options.button);
 
       if (options.inline) {
         $button.addClass(CLASS_FULLSCREEN);
