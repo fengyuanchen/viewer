@@ -1888,6 +1888,11 @@
   // Save the other viewer
   Viewer.other = $.fn.viewer;
 
+  //setDefaults
+  Viewer.setDefaults = function (options) {
+    $.extend(Viewer.DEFAULTS, $.isPlainObject(options) && options);
+  }
+
   // Register as jQuery plugin
   $.fn.viewer = function (options) {
     var args = toArray(arguments, 1);
