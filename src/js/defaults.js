@@ -76,3 +76,7 @@
     view: null,
     viewed: null
   };
+
+  Viewer.setDefaults = function (options) {
+    $.extend(Viewer.DEFAULTS, options);
+  };
