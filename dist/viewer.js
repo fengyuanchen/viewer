@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.5.0
+ * Viewer v0.5.1
  * https://github.com/fengyuanchen/viewer
  *
  * Copyright (c) 2015-2016 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2016-01-21T09:59:52.834Z
+ * Date: 2016-03-11T07:57:59.486Z
  */
 
 (function (factory) {
@@ -309,6 +309,7 @@
       }
 
       $navbar.addClass(!options.navbar ? CLASS_HIDE : getResponsiveClass(options.navbar));
+      $button.toggleClass(CLASS_HIDE, !options.button);
 
       if (options.inline) {
         $button.addClass(CLASS_FULLSCREEN);
@@ -342,17 +343,11 @@
     },
 
     unbuild: function () {
-      var options = this.options;
-      var $this = this.$element;
-
       if (!this.isBuilt) {
         return;
       }
 
-      if (options.inline) {
-        $this.removeClass(CLASS_HIDE);
-      }
-
+      this.isBuilt = false;
       this.$viewer.remove();
     },
 
@@ -591,8 +586,10 @@
     },
 
     resetImage: function () {
-      this.$image.remove();
-      this.$image = null;
+      if (this.$image) {
+        this.$image.remove();
+        this.$image = null;
+      }
     },
 
     start: function (e) {
@@ -754,9 +751,12 @@
       this.initViewer();
       this.renderViewer();
       this.renderList();
-      this.initImage($.proxy(function () {
-        this.renderImage();
-      }, this));
+
+      if (this.isViewed) {
+        this.initImage($.proxy(function () {
+          this.renderImage();
+        }, this));
+      }
 
       if (this.isPlayed) {
         this.$player.
@@ -1855,6 +1855,10 @@
     hidden: null,
     view: null,
     viewed: null
+  };
+
+  Viewer.setDefaults = function (options) {
+    $.extend(Viewer.DEFAULTS, options);
   };
 
   Viewer.TEMPLATE = (

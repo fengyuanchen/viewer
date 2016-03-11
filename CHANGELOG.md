@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.5.1 (Mar 11, 2016)
+
+- Fixed the issue of the "button" option (#8).
+- Fixed the issue of the "$.fn.viewer.setDefault" static method (#9).
+
+
 ## 0.5.0 (Jan 21, 2016)
 
 - Add more available values to the "title", "toolbar" and "navbar" options.
