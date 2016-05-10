@@ -2,7 +2,7 @@
 
 > A simple jQuery image viewing plugin.
 
-- [Homepage](http://fengyuanchen.github.io/viewer)
+- [Website](https://fengyuanchen.github.io/viewer)
 - [Viewer without jQuery](https://github.com/fengyuanchen/viewerjs)
 
 
@@ -261,6 +261,26 @@ Enable keyboard support.
 - Default: `5000`
 
 Define interval of each image when playing.
+
+
+### minWidth
+
+- Type: `Number`
+- Default: 200
+
+Define the minimum width of the viewer.
+
+> Only available in inline mode (set the `inline` option to `true`).
+
+
+### minHeight
+
+- Type: `Number`
+- Default: 100
+
+Define the minimum height of the viewer.
+
+> Only available in inline mode (set the `inline` option to `true`).
 
 
 ### zoomRatio
