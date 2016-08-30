@@ -9,18 +9,18 @@
 
 ## Table of contents
 
-  - [Features](#features)
-  - [Main](#main)
-  - [Getting started](#getting-started)
-  - [Keyboard support](#keyboard-support)
-  - [Options](#options)
-  - [Methods](#methods)
-  - [Events](#events)
-  - [No conflict](#no-conflict)
-  - [Browser support](#browser-support)
-  - [Contributing](#contributing)
-  - [Versioning](#versioning)
-  - [License](#license)
+- [Features](#features)
+- [Main](#main)
+- [Getting started](#getting-started)
+- [Keyboard support](#keyboard-support)
+- [Options](#options)
+- [Methods](#methods)
+- [Events](#events)
+- [No conflict](#no-conflict)
+- [Browser support](#browser-support)
+- [Contributing](#contributing)
+- [Versioning](#versioning)
+- [License](#license)
 
 
 
@@ -671,6 +671,8 @@ Reset the image to its initial state.
 ### update()
 
 Update the viewer when images changed.
+
+> If you load images dynamically, you can use this method to add the new images to the viewer instance.
 
 
 ### destroy()
