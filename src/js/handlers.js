@@ -318,7 +318,6 @@
       }
 
       if (action) {
-        event.preventDefault();
         this.action = action;
 
         // IE8  has `event.pageX/Y`, but not `event.originalEvent.pageX/Y`
@@ -375,8 +374,6 @@
       var action = this.action;
 
       if (action) {
-        event.preventDefault();
-
         if (action === 'move' && this.options.transition) {
           this.$image.addClass(CLASS_TRANSITION);
         }
