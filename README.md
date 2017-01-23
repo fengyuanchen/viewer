@@ -3,7 +3,7 @@
 > A simple jQuery image viewing plugin.
 
 - [Website](https://fengyuanchen.github.io/viewer)
-- [Viewer without jQuery](https://github.com/fengyuanchen/viewerjs)
+- [Viewer.js](https://github.com/fengyuanchen/viewerjs) - the non-jQuery version of Viewer (**recommended**).
 
 
 
