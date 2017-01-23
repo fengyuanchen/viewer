@@ -63,9 +63,9 @@
             '<img' +
               ' src="' + src + '"' +
               ' data-action="view"' +
-              ' data-index="' +  i + '"' +
-              ' data-original-url="' +  (url || src) + '"' +
-              ' alt="' +  alt + '"' +
+              ' data-index="' + i + '"' +
+              ' data-original-url="' + (url || src) + '"' +
+              ' alt="' + alt + '"' +
             '>' +
           '</li>'
         );

@@ -13,7 +13,6 @@
       this.transitioning = false;
       this.isFulled = true;
       this.isShown = true;
-      this.isVisible = true;
       this.render();
       this.bind();
 
@@ -31,7 +30,6 @@
       this.isViewed = false;
       this.isFulled = false;
       this.isShown = false;
-      this.isVisible = false;
       this.unbind();
       this.$body.removeClass(CLASS_OPEN);
       this.$viewer.addClass(CLASS_HIDE);
