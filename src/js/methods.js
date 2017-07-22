@@ -98,10 +98,7 @@
 
       this.$image = $image = $('<img src="' + url + '" alt="' + alt + '">');
 
-      if (this.isViewed) {
-        this.$items.eq(this.index).removeClass(CLASS_ACTIVE);
-      }
-
+      this.$items.eq(this.index).removeClass(CLASS_ACTIVE);
       $item.addClass(CLASS_ACTIVE);
 
       this.isViewed = false;
