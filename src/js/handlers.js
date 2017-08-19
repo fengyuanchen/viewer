@@ -292,7 +292,7 @@
       var action = options.movable ? 'move' : false;
       var touchesLength;
 
-      if (!this.isViewed) {
+      if (!this.isViewed || this.transitioning) {
         return;
       }
 
