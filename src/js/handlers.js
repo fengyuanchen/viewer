@@ -95,6 +95,10 @@
         this.timeout = false;
       }
 
+      if (!$image) {
+        return;
+      }
+
       $image.removeClass(CLASS_INVISIBLE).css('cssText', (
         'width:0;' +
         'height:0;' +
