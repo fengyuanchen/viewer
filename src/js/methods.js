@@ -249,7 +249,7 @@
           ratio = min(max(ratio, minZoomRatio), maxZoomRatio);
         }
 
-        if (ratio > 0.95 && ratio < 1.05) {
+        if (_event && ratio > 0.95 && ratio < 1.05) {
           ratio = 1;
         }
 
