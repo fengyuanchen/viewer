@@ -41,7 +41,7 @@ module.exports = {
  * Viewer v${pkg.version}
  * https://github.com/${pkg.repository}
  *
- * Copyright (c) 2014-${now.getFullYear()} ${pkg.author.name}
+ * Copyright (c) 2015-${now.getFullYear()} ${pkg.author.name}
  * Released under the ${pkg.license} license
  *
  * Date: ${now.toISOString()}
