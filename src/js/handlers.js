@@ -1,387 +1,395 @@
-    start: function (e) {
-      var target = e.target;
+import $ from 'jquery';
+import {
+  ACTION_MOVE,
+  ACTION_SWITCH,
+  ACTION_ZOOM,
+  CLASS_INVISIBLE,
+  CLASS_MOVE,
+  CLASS_TRANSITION,
+  EVENT_LOAD,
+  EVENT_VIEWED,
+} from './constants';
+import {
+  objectKeys,
+  getPointer,
+  getImageNaturalSizes,
+} from './utilities';
 
-      if ($(target).is('img')) {
-        this.target = target;
-        this.show();
-      }
-    },
+export default {
+  click(e) {
+    const $target = $(e.target);
+    const action = $target.data('action');
+    const { image } = this;
 
-    click: function (e) {
-      var $target = $(e.target);
-      var action = $target.data('action');
-      var image = this.image;
-
-      switch (action) {
-        case 'mix':
-          if (this.isPlayed) {
-            this.stop();
+    switch (action) {
+      case 'mix':
+        if (this.played) {
+          this.stop();
+        } else if (this.options.inline) {
+          if (this.fulled) {
+            this.exit();
           } else {
-            if (this.options.inline) {
-              if (this.isFulled) {
-                this.exit();
-              } else {
-                this.full();
-              }
-            } else {
-              this.hide();
-            }
+            this.full();
           }
+        } else {
+          this.hide();
+        }
 
-          break;
+        break;
 
-        case 'view':
-          this.view($target.data('index'));
-          break;
+      case 'view':
+        this.view($target.data('index'));
+        break;
 
-        case 'zoom-in':
-          this.zoom(0.1, true);
-          break;
+      case 'zoom-in':
+        this.zoom(0.1, true);
+        break;
 
-        case 'zoom-out':
-          this.zoom(-0.1, true);
-          break;
+      case 'zoom-out':
+        this.zoom(-0.1, true);
+        break;
 
-        case 'one-to-one':
+      case 'one-to-one':
+        this.toggle();
+        break;
+
+      case 'reset':
+        this.reset();
+        break;
+
+      case 'prev':
+        this.prev();
+        break;
+
+      case 'play':
+        this.play();
+        break;
+
+      case 'next':
+        this.next();
+        break;
+
+      case 'rotate-left':
+        this.rotate(-90);
+        break;
+
+      case 'rotate-right':
+        this.rotate(90);
+        break;
+
+      case 'flip-horizontal':
+        this.scaleX(-image.scaleX || -1);
+        break;
+
+      case 'flip-vertical':
+        this.scaleY(-image.scaleY || -1);
+        break;
+
+      default:
+        if (this.played) {
+          this.stop();
+        }
+    }
+  },
+
+  dragstart(e) {
+    if ($(e.target).is('img')) {
+      e.preventDefault();
+    }
+  },
+
+  keydown(e) {
+    const { options } = this;
+
+    if (!this.fulled || !options.keyboard) {
+      return;
+    }
+
+    switch (e.which) {
+      // (Key: Esc)
+      case 27:
+        if (this.played) {
+          this.stop();
+        } else if (options.inline) {
+          if (this.fulled) {
+            this.exit();
+          }
+        } else {
+          this.hide();
+        }
+
+        break;
+
+      // (Key: Space)
+      case 32:
+        if (this.played) {
+          this.stop();
+        }
+
+        break;
+
+      // View previous (Key: ←)
+      case 37:
+        this.prev();
+        break;
+
+      // Zoom in (Key: ↑)
+      case 38:
+        // Prevent scroll on Firefox
+        e.preventDefault();
+
+        this.zoom(options.zoomRatio, true);
+        break;
+
+      // View next (Key: →)
+      case 39:
+        this.next();
+        break;
+
+      // Zoom out (Key: ↓)
+      case 40:
+        // Prevent scroll on Firefox
+        e.preventDefault();
+
+        this.zoom(-options.zoomRatio, true);
+        break;
+
+      // 48: Zoom out to initial size (Key: Ctrl + 0)
+      // 49: Zoom in to natural size (Key: Ctrl + 1)
+      case 48:
+      case 49:
+        if (e.ctrlKey || e.shiftKey) {
+          e.preventDefault();
           this.toggle();
-          break;
-
-        case 'reset':
-          this.reset();
-          break;
-
-        case 'prev':
-          this.prev();
-          break;
-
-        case 'play':
-          this.play();
-          break;
-
-        case 'next':
-          this.next();
-          break;
-
-        case 'rotate-left':
-          this.rotate(-90);
-          break;
-
-        case 'rotate-right':
-          this.rotate(90);
-          break;
-
-        case 'flip-horizontal':
-          this.scaleX(-image.scaleX || -1);
-          break;
-
-        case 'flip-vertical':
-          this.scaleY(-image.scaleY || -1);
-          break;
-
-        default:
-          if (this.isPlayed) {
-            this.stop();
-          }
-      }
-    },
-
-    load: function () {
-      var options = this.options;
-      var viewer = this.viewer;
-      var $image = this.$image;
-
-      if (this.timeout) {
-        clearTimeout(this.timeout);
-        this.timeout = false;
-      }
-
-      if (!$image) {
-        return;
-      }
-
-      $image.removeClass(CLASS_INVISIBLE).css('cssText', (
-        'width:0;' +
-        'height:0;' +
-        'margin-left:' + viewer.width / 2 + 'px;' +
-        'margin-top:' + viewer.height / 2 + 'px;' +
-        'max-width:none!important;' +
-        'visibility:visible;'
-      ));
-
-      this.initImage($.proxy(function () {
-        $image.
-          toggleClass(CLASS_TRANSITION, options.transition).
-          toggleClass(CLASS_MOVE, options.movable);
-
-        this.renderImage($.proxy(function () {
-          this.isViewed = true;
-          this.trigger(EVENT_VIEWED);
-        }, this));
-      }, this));
-    },
-
-    loadImage: function (e) {
-      var image = e.target;
-      var $image = $(image);
-      var $parent = $image.parent();
-      var parentWidth = $parent.width();
-      var parentHeight = $parent.height();
-      var filled = e.data && e.data.filled;
-
-      getImageSize(image, function (naturalWidth, naturalHeight) {
-        var aspectRatio = naturalWidth / naturalHeight;
-        var width = parentWidth;
-        var height = parentHeight;
-
-        if (parentHeight * aspectRatio > parentWidth) {
-          if (filled) {
-            width = parentHeight * aspectRatio;
-          } else {
-            height = parentWidth / aspectRatio;
-          }
-        } else {
-          if (filled) {
-            height = parentWidth / aspectRatio;
-          } else {
-            width = parentHeight * aspectRatio;
-          }
         }
 
-        $image.css({
-          width: width,
-          height: height,
-          marginLeft: (parentWidth - width) / 2,
-          marginTop: (parentHeight - height) / 2
-        });
+        break;
+
+      default:
+    }
+  },
+
+  load() {
+    const { options, viewer, $image } = this;
+
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = false;
+    }
+
+    if (!$image) {
+      return;
+    }
+
+    $image.removeClass(CLASS_INVISIBLE).css(
+      'cssText', (
+        `${'width:0;' +
+      'height:0;' +
+      'margin-left:'}${viewer.width / 2}px;` +
+      `margin-top:${viewer.height / 2}px;` +
+      'max-width:none!important;' +
+      'visibility:visible;'
+      ),
+    );
+
+    this.initImage(() => {
+      $image
+        .toggleClass(CLASS_TRANSITION, options.transition)
+        .toggleClass(CLASS_MOVE, options.movable);
+
+      this.renderImage(() => {
+        this.viewed = true;
+        this.trigger(EVENT_VIEWED);
       });
-    },
+    });
+  },
 
-    resize: function () {
-      this.initContainer();
-      this.initViewer();
-      this.renderViewer();
-      this.renderList();
+  loadImage(e) {
+    const image = e.target;
+    const $image = $(image);
+    const $parent = $image.parent();
+    const parentWidth = $parent.width();
+    const parentHeight = $parent.height();
+    const filled = e.data && e.data.filled;
 
-      if (this.isViewed) {
-        this.initImage($.proxy(function () {
-          this.renderImage();
-        }, this));
-      }
+    getImageNaturalSizes(image, (naturalWidth, naturalHeight) => {
+      const aspectRatio = naturalWidth / naturalHeight;
+      let width = parentWidth;
+      let height = parentHeight;
 
-      if (this.isPlayed) {
-        this.$player.
-          find(SELECTOR_IMG).
-          one(EVENT_LOAD, $.proxy(this.loadImage, this)).
-          trigger(EVENT_LOAD);
-      }
-    },
-
-    wheel: function (event) {
-      var e = event.originalEvent || event;
-      var ratio = num(this.options.zoomRatio) || 0.1;
-      var delta = 1;
-
-      if (!this.isViewed) {
-        return;
-      }
-
-      event.preventDefault();
-
-      // Limit wheel speed to prevent zoom too fast
-      if (this.wheeling) {
-        return;
-      }
-
-      this.wheeling = true;
-
-      setTimeout($.proxy(function () {
-        this.wheeling = false;
-      }, this), 50);
-
-      if (e.deltaY) {
-        delta = e.deltaY > 0 ? 1 : -1;
-      } else if (e.wheelDelta) {
-        delta = -e.wheelDelta / 120;
-      } else if (e.detail) {
-        delta = e.detail > 0 ? 1 : -1;
-      }
-
-      this.zoom(-delta * ratio, true, event);
-    },
-
-    keydown: function (e) {
-      var options = this.options;
-      var which = e.which;
-
-      if (!this.isFulled || !options.keyboard) {
-        return;
-      }
-
-      switch (which) {
-
-        // (Key: Esc)
-        case 27:
-          if (this.isPlayed) {
-            this.stop();
-          } else {
-            if (options.inline) {
-              if (this.isFulled) {
-                this.exit();
-              }
-            } else {
-              this.hide();
-            }
-          }
-
-          break;
-
-        // (Key: Space)
-        case 32:
-          if (this.isPlayed) {
-            this.stop();
-          }
-
-          break;
-
-        // View previous (Key: ←)
-        case 37:
-          this.prev();
-          break;
-
-        // Zoom in (Key: ↑)
-        case 38:
-
-          // Prevent scroll on Firefox
-          e.preventDefault();
-
-          this.zoom(options.zoomRatio, true);
-          break;
-
-        // View next (Key: →)
-        case 39:
-          this.next();
-          break;
-
-        // Zoom out (Key: ↓)
-        case 40:
-
-          // Prevent scroll on Firefox
-          e.preventDefault();
-
-          this.zoom(-options.zoomRatio, true);
-          break;
-
-        // Zoom out to initial size (Key: Ctrl + 0)
-        case 48:
-          // Go to next
-
-        // Zoom in to natural size (Key: Ctrl + 1)
-        case 49:
-          if (e.ctrlKey || e.shiftKey) {
-            e.preventDefault();
-            this.toggle();
-          }
-
-          break;
-
-        // No default
-      }
-    },
-
-    mousedown: function (event) {
-      var options = this.options;
-      var originalEvent = event.originalEvent;
-      var touches = originalEvent && originalEvent.touches;
-      var e = event;
-      var action = options.movable ? 'move' : false;
-      var touchesLength;
-
-      if (!this.isViewed || this.transitioning) {
-        return;
-      }
-
-      if (touches) {
-        touchesLength = touches.length;
-
-        if (touchesLength > 1) {
-          if (options.zoomable && touchesLength === 2) {
-            e = touches[1];
-            this.startX2 = e.pageX;
-            this.startY2 = e.pageY;
-            action = 'zoom';
-          } else {
-            return;
-          }
+      if (parentHeight * aspectRatio > parentWidth) {
+        if (filled) {
+          width = parentHeight * aspectRatio;
         } else {
-          if (this.isSwitchable()) {
-            action = 'switch';
-          }
+          height = parentWidth / aspectRatio;
         }
-
-        e = touches[0];
+      } else if (filled) {
+        height = parentWidth / aspectRatio;
+      } else {
+        width = parentHeight * aspectRatio;
       }
 
-      if (action) {
-        this.action = action;
+      $image.css({
+        width,
+        height,
+        marginLeft: (parentWidth - width) / 2,
+        marginTop: (parentHeight - height) / 2,
+      });
+    });
+  },
 
-        // IE8  has `event.pageX/Y`, but not `event.originalEvent.pageX/Y`
-        // IE10 has `event.originalEvent.pageX/Y`, but not `event.pageX/Y`
-        this.startX = e.pageX || originalEvent && originalEvent.pageX;
-        this.startY = e.pageY || originalEvent && originalEvent.pageY;
-      }
-    },
+  pointerdown(e) {
+    if (!this.viewed || this.transitioning) {
+      return;
+    }
 
-    mousemove: function (event) {
-      var options = this.options;
-      var action = this.action;
-      var $image = this.$image;
-      var originalEvent = event.originalEvent;
-      var touches = originalEvent && originalEvent.touches;
-      var e = event;
-      var touchesLength;
+    const { options, pointers } = this;
+    const { originalEvent } = e;
 
-      if (!this.isViewed) {
+    if (originalEvent && originalEvent.changedTouches) {
+      $.each(originalEvent.changedTouches, (i, touch) => {
+        pointers[touch.identifier] = getPointer(touch);
+      });
+    } else {
+      pointers[(originalEvent && originalEvent.pointerId) || 0] = getPointer(originalEvent || e);
+    }
+
+    let action = options.movable ? ACTION_MOVE : false;
+
+    if (objectKeys(pointers).length > 1) {
+      action = ACTION_ZOOM;
+    } else if ((e.pointerType === 'touch' || e.type === 'touchmove') && this.isSwitchable()) {
+      action = ACTION_SWITCH;
+    }
+
+    this.action = action;
+  },
+
+  pointermove(e) {
+    const {
+      $image,
+      action,
+      pointers,
+    } = this;
+
+    if (!this.viewed || !action) {
+      return;
+    }
+
+    e.preventDefault();
+
+    const { originalEvent } = e;
+
+    if (originalEvent && originalEvent.changedTouches) {
+      $.each(originalEvent.changedTouches, (i, touch) => {
+        $.extend(pointers[touch.identifier], getPointer(touch, true));
+      });
+    } else {
+      $.extend(
+        pointers[(originalEvent && originalEvent.pointerId) || 0],
+        getPointer(e, true),
+      );
+    }
+
+    if (action === ACTION_MOVE && this.options.transition && $image.hasClass(CLASS_TRANSITION)) {
+      $image.removeClass(CLASS_TRANSITION);
+    }
+
+    this.change(e);
+  },
+
+  pointerup(e) {
+    if (!this.viewed) {
+      return;
+    }
+
+    const { action, pointers } = this;
+    const { originalEvent } = e;
+
+    if (originalEvent && originalEvent.changedTouches) {
+      $.each(originalEvent.changedTouches, (i, touch) => {
+        delete pointers[touch.identifier];
+      });
+    } else {
+      delete pointers[(originalEvent && originalEvent.pointerId) || 0];
+    }
+
+    if (!action) {
+      return;
+    }
+
+    if (action === ACTION_MOVE && this.options.transition) {
+      this.$image.addClass(CLASS_TRANSITION);
+    }
+
+    this.action = false;
+  },
+
+  resize() {
+    this.initContainer();
+    this.initViewer();
+    this.renderViewer();
+    this.renderList();
+
+    if (this.viewed) {
+      this.initImage(() => {
+        this.renderImage();
+      });
+    }
+
+    if (this.played) {
+      if (this.options.fullscreen && this.fulled &&
+        !document.fullscreenElement &&
+        !document.mozFullScreenElement &&
+        !document.webkitFullscreenElement &&
+        !document.msFullscreenElement) {
+        this.stop();
         return;
       }
 
-      if (touches) {
-        touchesLength = touches.length;
+      this.$player
+        .find('img')
+        .one(EVENT_LOAD, $.proxy(this.loadImage, this))
+        .trigger(EVENT_LOAD);
+    }
+  },
 
-        if (touchesLength > 1) {
-          if (options.zoomable && touchesLength === 2) {
-            e = touches[1];
-            this.endX2 = e.pageX;
-            this.endY2 = e.pageY;
-          } else {
-            return;
-          }
-        }
+  start({ target }) {
+    if ($(target).is('img')) {
+      this.target = target;
+      this.show();
+    }
+  },
 
-        e = touches[0];
-      }
+  wheel(e) {
+    if (!this.viewed) {
+      return;
+    }
 
-      if (action) {
-        event.preventDefault();
+    e.preventDefault();
 
-        if (action === 'move' && options.transition && $image.hasClass(CLASS_TRANSITION)) {
-          $image.removeClass(CLASS_TRANSITION);
-        }
+    // Limit wheel speed to prevent zoom too fast
+    if (this.wheeling) {
+      return;
+    }
 
-        this.endX = e.pageX || originalEvent && originalEvent.pageX;
-        this.endY = e.pageY || originalEvent && originalEvent.pageY;
+    this.wheeling = true;
 
-        this.change(event);
-      }
-    },
+    setTimeout(() => {
+      this.wheeling = false;
+    }, 50);
 
-    mouseup: function (event) {
-      var action = this.action;
+    const originalEvent = e.originalEvent || e;
+    let delta = 1;
 
-      if (action) {
-        if (action === 'move' && this.options.transition) {
-          this.$image.addClass(CLASS_TRANSITION);
-        }
+    if (originalEvent.deltaY) {
+      delta = originalEvent.deltaY > 0 ? 1 : -1;
+    } else if (originalEvent.wheelDelta) {
+      delta = -originalEvent.wheelDelta / 120;
+    } else if (originalEvent.detail) {
+      delta = originalEvent.detail > 0 ? 1 : -1;
+    }
 
-        this.action = false;
-      }
-    },
+    this.zoom(-delta * (Number(this.options.zoomRatio) || 0.1), true, e);
+  },
+};

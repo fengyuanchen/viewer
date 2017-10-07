@@ -1,135 +1,143 @@
-    // A shortcut for triggering custom events
-    trigger: function (type, data) {
-      var e = $.Event(type, data);
+import $ from 'jquery';
+import {
+  ACTION_MOVE,
+  ACTION_SWITCH,
+  ACTION_ZOOM,
+  CLASS_HIDE,
+  CLASS_OPEN,
+  EVENT_HIDDEN,
+  EVENT_SHOWN,
+} from './constants';
+import {
+  getMaxZoomRatio,
+} from './utilities';
 
-      this.$element.trigger(e);
+const { document } = window;
 
-      return e;
-    },
+export default {
+  // A shortcut for triggering custom events
+  trigger(type, data) {
+    const e = $.Event(type, data);
 
-    shown: function () {
-      var options = this.options;
+    this.$element.trigger(e);
 
-      this.transitioning = false;
-      this.isFulled = true;
-      this.isShown = true;
-      this.render();
-      this.bind();
+    return e;
+  },
 
-      if ($.isFunction(options.shown)) {
-        this.$element.one(EVENT_SHOWN, options.shown);
-      }
+  shown() {
+    const { options } = this;
 
-      this.trigger(EVENT_SHOWN);
-    },
+    this.transitioning = false;
+    this.fulled = true;
+    this.visible = true;
+    this.render();
+    this.bind();
 
-    hidden: function () {
-      var options = this.options;
-
-      this.transitioning = false;
-      this.isViewed = false;
-      this.isFulled = false;
-      this.isShown = false;
-      this.unbind();
-      this.$body.removeClass(CLASS_OPEN);
-      this.$viewer.addClass(CLASS_HIDE);
-      this.resetList();
-      this.resetImage();
-
-      if ($.isFunction(options.hidden)) {
-        this.$element.one(EVENT_HIDDEN, options.hidden);
-      }
-
-      this.trigger(EVENT_HIDDEN);
-    },
-
-    requestFullscreen: function () {
-      var documentElement = document.documentElement;
-
-      if (this.isFulled && !document.fullscreenElement && !document.mozFullScreenElement &&
-        !document.webkitFullscreenElement && !document.msFullscreenElement) {
-
-        if (documentElement.requestFullscreen) {
-          documentElement.requestFullscreen();
-        } else if (documentElement.msRequestFullscreen) {
-          documentElement.msRequestFullscreen();
-        } else if (documentElement.mozRequestFullScreen) {
-          documentElement.mozRequestFullScreen();
-        } else if (documentElement.webkitRequestFullscreen) {
-          documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
-      }
-    },
-
-    exitFullscreen: function () {
-      if (this.isFulled) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
-      }
-    },
-
-    change: function (event) {
-      var offsetX = this.endX - this.startX;
-      var offsetY = this.endY - this.startY;
-
-      switch (this.action) {
-
-        // Move the current image
-        case 'move':
-          this.move(offsetX, offsetY);
-          break;
-
-        // Zoom the current image
-        case 'zoom':
-          this.zoom(function (x1, y1, x2, y2) {
-            var z1 = sqrt(x1 * x1 + y1 * y1);
-            var z2 = sqrt(x2 * x2 + y2 * y2);
-
-            return (z2 - z1) / z1;
-          }(
-            abs(this.startX - this.startX2),
-            abs(this.startY - this.startY2),
-            abs(this.endX - this.endX2),
-            abs(this.endY - this.endY2)
-          ), false, event);
-
-          this.startX2 = this.endX2;
-          this.startY2 = this.endY2;
-          break;
-
-        case 'switch':
-          this.action = 'switched';
-
-          if (abs(offsetX) > abs(offsetY)) {
-            if (offsetX > 1) {
-              this.prev();
-            } else if (offsetX < -1) {
-              this.next();
-            }
-          }
-
-          break;
-
-        // No default
-      }
-
-      // Override
-      this.startX = this.endX;
-      this.startY = this.endY;
-    },
-
-    isSwitchable: function () {
-      var image = this.image;
-      var viewer = this.viewer;
-
-      return (image.left >= 0 && image.top >= 0 && image.width <= viewer.width &&
-        image.height <= viewer.height);
+    if ($.isFunction(options.shown)) {
+      this.$element.one(EVENT_SHOWN, options.shown);
     }
-  };
+
+    this.trigger(EVENT_SHOWN);
+  },
+
+  hidden() {
+    const { options } = this;
+
+    this.transitioning = false;
+    this.viewed = false;
+    this.fulled = false;
+    this.visible = false;
+    this.unbind();
+    this.$body.removeClass(CLASS_OPEN);
+    this.$viewer.addClass(CLASS_HIDE);
+    this.resetList();
+    this.resetImage();
+
+    if ($.isFunction(options.hidden)) {
+      this.$element.one(EVENT_HIDDEN, options.hidden);
+    }
+
+    this.trigger(EVENT_HIDDEN);
+  },
+
+  requestFullscreen() {
+    if (this.fulled && !document.fullscreenElement && !document.mozFullScreenElement &&
+      !document.webkitFullscreenElement && !document.msFullscreenElement) {
+      const { documentElement } = document;
+
+      if (documentElement.requestFullscreen) {
+        documentElement.requestFullscreen();
+      } else if (documentElement.msRequestFullscreen) {
+        documentElement.msRequestFullscreen();
+      } else if (documentElement.mozRequestFullScreen) {
+        documentElement.mozRequestFullScreen();
+      } else if (documentElement.webkitRequestFullscreen) {
+        documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      }
+    }
+  },
+
+  exitFullscreen() {
+    if (this.fulled) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+  },
+
+  change(event) {
+    const { pointers } = this;
+    const pointer = pointers[Object.keys(pointers)[0]];
+    const offsetX = pointer.endX - pointer.startX;
+    const offsetY = pointer.endY - pointer.startY;
+
+    switch (this.action) {
+      // Move the current image
+      case ACTION_MOVE:
+        this.move(offsetX, offsetY);
+        break;
+
+      // Zoom the current image
+      case ACTION_ZOOM:
+        this.zoom(getMaxZoomRatio(pointers), false, event);
+
+        this.startX2 = this.endX2;
+        this.startY2 = this.endY2;
+        break;
+
+      case ACTION_SWITCH:
+        this.action = 'switched';
+
+        if (Math.abs(offsetX) > Math.abs(offsetY)) {
+          if (offsetX > 1) {
+            this.prev();
+          } else if (offsetX < -1) {
+            this.next();
+          }
+        }
+
+        break;
+
+      default:
+    }
+
+    // Override
+    $.each(pointers, (i, p) => {
+      p.startX = p.endX;
+      p.startY = p.endY;
+    });
+  },
+
+  isSwitchable() {
+    const { image, viewer } = this;
+
+    return (image.left >= 0 && image.top >= 0 && image.width <= viewer.width &&
+      image.height <= viewer.height);
+  },
+};

@@ -1,188 +1,198 @@
-    render: function () {
-      this.initContainer();
-      this.initViewer();
-      this.initList();
-      this.renderViewer();
-    },
+import $ from 'jquery';
+import {
+  CLASS_TRANSITION,
+  EVENT_LOAD,
+  EVENT_VIEWED,
+  EVENT_TRANSITIONEND,
+} from './constants';
+import {
+  isString,
+  getImageNameFromURL,
+  getImageNaturalSizes,
+  getTransformValues,
+} from './utilities';
 
-    initContainer: function () {
-      this.container = {
-        width: $window.innerWidth(),
-        height: $window.innerHeight()
+export default {
+  render() {
+    this.initContainer();
+    this.initViewer();
+    this.initList();
+    this.renderViewer();
+  },
+
+  initContainer() {
+    const $window = $(window);
+
+    this.container = {
+      width: $window.innerWidth(),
+      height: $window.innerHeight(),
+    };
+  },
+
+  initViewer() {
+    const { options, $parent } = this;
+    let viewer;
+
+    if (options.inline) {
+      viewer = {
+        width: Math.max($parent.width(), options.minWidth),
+        height: Math.max($parent.height(), options.minHeight),
       };
-    },
+      this.parent = viewer;
+    }
 
-    initViewer: function () {
-      var options = this.options;
-      var $parent = this.$parent;
-      var viewer;
+    if (this.fulled || !viewer) {
+      viewer = this.container;
+    }
 
-      if (options.inline) {
-        this.parent = viewer = {
-          width: max($parent.width(), options.minWidth),
-          height: max($parent.height(), options.minHeight)
-        };
+    this.viewer = $.extend({}, viewer);
+  },
+
+  renderViewer() {
+    if (this.options.inline && !this.fulled) {
+      this.$viewer.css(this.viewer);
+    }
+  },
+
+  initList() {
+    const { $element, options, $list } = this;
+    const list = [];
+
+    this.$images.each((i, image) => {
+      const alt = image.alt || getImageNameFromURL(image);
+      const { src } = image;
+      let { url } = options;
+
+      if (!src) {
+        return;
       }
 
-      if (this.isFulled || !viewer) {
-        viewer = this.container;
+      if (isString(url)) {
+        url = image.getAttribute(url);
+      } else if ($.isFunction(url)) {
+        url = url.call(image, image);
       }
 
-      this.viewer = $.extend({}, viewer);
-    },
+      list.push('<li>' +
+        '<img' +
+          ` src="${src}"` +
+          ' data-action="view"' +
+          ` data-index="${i}"` +
+          ` data-original-url="${url || src}"` +
+          ` alt="${alt}"` +
+        '>' +
+      '</li>');
+    });
 
-    renderViewer: function () {
-      if (this.options.inline && !this.isFulled) {
-        this.$viewer.css(this.viewer);
-      }
-    },
+    $list.html(list.join('')).find('img').one(EVENT_LOAD, {
+      filled: true,
+    }, $.proxy(this.loadImage, this));
 
-    initList: function () {
-      var options = this.options;
-      var $this = this.$element;
-      var $list = this.$list;
-      var list = [];
+    this.$items = $list.children();
 
-      this.$images.each(function (i) {
-        var src = this.src;
-        var alt = this.alt || getImageName(src);
-        var url = options.url;
-
-        if (!src) {
-          return;
-        }
-
-        if (isString(url)) {
-          url = this.getAttribute(url);
-        } else if ($.isFunction(url)) {
-          url = url.call(this, this);
-        }
-
-        list.push(
-          '<li>' +
-            '<img' +
-              ' src="' + src + '"' +
-              ' data-action="view"' +
-              ' data-index="' + i + '"' +
-              ' data-original-url="' + (url || src) + '"' +
-              ' alt="' + alt + '"' +
-            '>' +
-          '</li>'
-        );
+    if (options.transition) {
+      $element.one(EVENT_VIEWED, () => {
+        $list.addClass(CLASS_TRANSITION);
       });
+    }
+  },
 
-      $list.html(list.join('')).find(SELECTOR_IMG).one(EVENT_LOAD, {
-        filled: true
-      }, $.proxy(this.loadImage, this));
+  renderList(index) {
+    const i = index || this.index;
+    const width = this.$items.eq(i).width();
 
-      this.$items = $list.children();
+    // 1 pixel of `margin-left` width
+    const outerWidth = width + 1;
 
-      if (options.transition) {
-        $this.one(EVENT_VIEWED, function () {
-          $list.addClass(CLASS_TRANSITION);
-        });
+    // Place the active item in the center of the screen
+    this.$list.css({
+      width: outerWidth * this.length,
+      marginLeft: ((this.viewer.width - width) / 2) - (outerWidth * i),
+    });
+  },
+
+  resetList() {
+    this.$list.empty().removeClass(CLASS_TRANSITION).css('margin-left', 0);
+  },
+
+  initImage(callback) {
+    const { options, $image, viewer } = this;
+    const footerHeight = this.$footer.height();
+    const viewerWidth = viewer.width;
+    const viewerHeight = Math.max(viewer.height - footerHeight, footerHeight);
+    const oldImage = this.image || {};
+
+    getImageNaturalSizes($image[0], (naturalWidth, naturalHeight) => {
+      const aspectRatio = naturalWidth / naturalHeight;
+      let width = viewerWidth;
+      let height = viewerHeight;
+
+      if (viewerHeight * aspectRatio > viewerWidth) {
+        height = viewerWidth / aspectRatio;
+      } else {
+        width = viewerHeight * aspectRatio;
       }
-    },
 
-    renderList: function (index) {
-      var i = index || this.index;
-      var width = this.$items.eq(i).width();
-      var outerWidth = width + 1; // 1 pixel of `margin-left` width
+      width = Math.min(width * 0.9, naturalWidth);
+      height = Math.min(height * 0.9, naturalHeight);
 
-      // Place the active item in the center of the screen
-      this.$list.css({
-        width: outerWidth * this.length,
-        marginLeft: (this.viewer.width - width) / 2 - outerWidth * i
-      });
-    },
+      const image = {
+        naturalWidth,
+        naturalHeight,
+        aspectRatio,
+        ratio: width / naturalWidth,
+        width,
+        height,
+        left: (viewerWidth - width) / 2,
+        top: (viewerHeight - height) / 2,
+      };
+      const initialImage = $.extend({}, image);
 
-    resetList: function () {
-      this.$list.empty().removeClass(CLASS_TRANSITION).css('margin-left', 0);
-    },
+      if (options.rotatable) {
+        image.rotate = oldImage.rotate || 0;
+        initialImage.rotate = 0;
+      }
 
-    initImage: function (callback) {
-      var options = this.options;
-      var $image = this.$image;
-      var viewer = this.viewer;
-      var footerHeight = this.$footer.height();
-      var viewerWidth = viewer.width;
-      var viewerHeight = max(viewer.height - footerHeight, footerHeight);
-      var oldImage = this.image || {};
+      if (options.scalable) {
+        image.scaleX = oldImage.scaleX || 1;
+        image.scaleY = oldImage.scaleY || 1;
+        initialImage.scaleX = 1;
+        initialImage.scaleY = 1;
+      }
 
-      getImageSize($image[0], $.proxy(function (naturalWidth, naturalHeight) {
-        var aspectRatio = naturalWidth / naturalHeight;
-        var width = viewerWidth;
-        var height = viewerHeight;
-        var initialImage;
-        var image;
-
-        if (viewerHeight * aspectRatio > viewerWidth) {
-          height = viewerWidth / aspectRatio;
-        } else {
-          width = viewerHeight * aspectRatio;
-        }
-
-        width = min(width * 0.9, naturalWidth);
-        height = min(height * 0.9, naturalHeight);
-
-        image = {
-          naturalWidth: naturalWidth,
-          naturalHeight: naturalHeight,
-          aspectRatio: aspectRatio,
-          ratio: width / naturalWidth,
-          width: width,
-          height: height,
-          left: (viewerWidth - width) / 2,
-          top: (viewerHeight - height) / 2
-        };
-
-        initialImage = $.extend({}, image);
-
-        if (options.rotatable) {
-          image.rotate = oldImage.rotate || 0;
-          initialImage.rotate = 0;
-        }
-
-        if (options.scalable) {
-          image.scaleX = oldImage.scaleX || 1;
-          image.scaleY = oldImage.scaleY || 1;
-          initialImage.scaleX = 1;
-          initialImage.scaleY = 1;
-        }
-
-        this.image = image;
-        this.initialImage = initialImage;
-
-        if ($.isFunction(callback)) {
-          callback();
-        }
-      }, this));
-    },
-
-    renderImage: function (callback) {
-      var image = this.image;
-      var $image = this.$image;
-
-      $image.css({
-        width: image.width,
-        height: image.height,
-        marginLeft: image.left,
-        marginTop: image.top,
-        transform: getTransform(image)
-      });
+      this.image = image;
+      this.initialImage = initialImage;
 
       if ($.isFunction(callback)) {
-        if (this.transitioning) {
-          $image.one(EVENT_TRANSITIONEND, callback);
-        } else {
-          callback();
-        }
+        callback();
       }
-    },
+    });
+  },
 
-    resetImage: function () {
-      if (this.$image) {
-        this.$image.remove();
-        this.$image = null;
+  renderImage(callback) {
+    const { image, $image } = this;
+
+    $image.css({
+      width: image.width,
+      height: image.height,
+      marginLeft: image.left,
+      marginTop: image.top,
+      transform: getTransformValues(image),
+    });
+
+    if ($.isFunction(callback)) {
+      if (this.transitioning) {
+        $image.one(EVENT_TRANSITIONEND, callback);
+      } else {
+        callback();
       }
-    },
+    }
+  },
+
+  resetImage() {
+    if (this.$image) {
+      this.$image.remove();
+      this.$image = null;
+    }
+  },
+};
