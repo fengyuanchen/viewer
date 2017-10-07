@@ -42,7 +42,7 @@ export function isUndefined(value) {
  * Custom proxy to avoid jQuery's guid.
  * @param {Function} fn - The target function.
  * @param {Object} context - The new context for the function.
- * @returns {boolean} The new function.
+ * @returns {Function} The new function.
  */
 export function proxy(fn, context, ...args) {
   return (...args2) => fn.apply(context, args.concat(args2));
