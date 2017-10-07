@@ -1,11 +1,17 @@
 # Changelog
 
+## 0.6.0 (Oct 7, 2017)
+
+- Refactor in ES6.
+- Build CSS code with PostCSS.
+- Removed `build` event.
+- Renamed `built` event to `ready`.
+- Removed event namespace.
 
 ## 0.5.1 (Mar 11, 2016)
 
 - Fixed the issue of the "button" option (#8).
 - Fixed the issue of the "$.fn.viewer.setDefault" static method (#9).
-
 
 ## 0.5.0 (Jan 21, 2016)
 
@@ -14,18 +20,15 @@
 - Exit fullscreen when stop playing.
 - Fixed title not generated bug (#6).
 
-
 ## 0.4.0 (Jan 1, 2016)
 
 - Added "update" method for update image dynamically.
 - Hides title and toolbar on small screen (width < 768px).
 
-
 ## 0.3.1 (Dec 28, 2015)
 
 - Supports to zoom from event triggering point.
 - Fix a bug of the index of viewing image.
-
 
 ## 0.3.0 (Dec 24, 2015)
 
@@ -35,17 +38,14 @@
 - Fix lost transition after call full method in inline mode
 - Fix incorrect tooltip after switch image quickly
 
-
 ## 0.2.0 (Oct 18, 2015)
 
 - Added one new method: "moveTo"
 - Improved the image loading and showing
 
-
 ## 0.1.1 (Oct 7, 2015)
 
 - Fixed the issue of modal closing after zoomed in and zoomed out
-
 
 ## 0.1.0 (Sep 2, 2015)
 
@@ -54,12 +54,10 @@
 - Supports 21 methods: "show", "hide", "view", "prev", "next", "move", "zoom", "zoomTo", "rotate", "rotateTo", "scale", "scaleX", "scaleY", "play", "stop", "full", "exit", "tooltip", "toggle", "reset", "destroy"
 - Supports 6 events: "build.viewer", "built.viewer", "show.viewer", "shown.viewer", "hide.viewer", "hidden.viewer"
 
-
 ## 0.0.1 (Apr 19, 2015)
 
 - Improve UI
 - Develop a alpha version
-
 
 ## 0.0.0 (Apr 19, 2014)
 

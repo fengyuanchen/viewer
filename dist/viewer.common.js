@@ -7,13 +7,11 @@
  *
  * Date: 2017-10-07T09:53:36.889Z
  */
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('jquery')) :
-	typeof define === 'function' && define.amd ? define(['jquery'], factory) :
-	(factory(global.jQuery));
-}(this, (function ($) { 'use strict';
+'use strict';
 
-$ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var $ = _interopDefault(require('jquery'));
 
 var DEFAULTS = {
   // Enable inline mode
@@ -2052,5 +2050,3 @@ $.fn.viewer.noConflict = function noConflict() {
   $.fn.viewer = AnotherViewer;
   return this;
 };
-
-})));

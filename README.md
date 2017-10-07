@@ -5,8 +5,6 @@
 - [Website](https://fengyuanchen.github.io/viewer)
 - [Viewer.js](https://github.com/fengyuanchen/viewerjs) - the non-jQuery version of Viewer (**recommended**).
 
-
-
 ## Table of contents
 
 - [Features](#features)
@@ -22,8 +20,6 @@
 - [Versioning](#versioning)
 - [License](#license)
 
-
-
 ## Features
 
 - Supports [options](#options)
@@ -37,34 +33,25 @@
 - Supports keyboard
 - Cross-browser support
 
-
-
 ## Main
 
-```
+```text
 dist/
-├── viewer.css     ( 8 KB)
-├── viewer.min.css ( 7 KB)
-├── viewer.js      (48 KB)
-└── viewer.min.js  (21 KB)
+├── viewer.css       ( 8 KB)
+├── viewer.min.css   ( 7 KB)
+├── viewer.js        (50 KB, UMD)
+├── viewer.min.js    (22 KB, UMD, compressed)
+├── viewer.common.js (50 KB, CommonJS, default)
+└── viewer.esm.js    (50 KB, ES Module)
 ```
-
-
 
 ## Getting started
 
-### Quick start
+### Install
 
-Four quick start options are available:
-
-- [Download the latest release](https://github.com/fengyuanchen/viewer/archive/master.zip).
-- Clone the repository: `git clone https://github.com/fengyuanchen/viewer.git`.
-- Install with [NPM](http://npmjs.org): `npm install imageviewer`.
-- Install with [Bower](http://bower.io): `bower install imageviewer`.
-
-
-
-### Installation
+```shell
+npm install imageviewer
+```
 
 Include files:
 
@@ -73,8 +60,6 @@ Include files:
 <link  href="/path/to/viewer.css" rel="stylesheet">
 <script src="/path/to/viewer.js"></script>
 ```
-
-
 
 ### Usage
 
@@ -103,8 +88,6 @@ $('.image').viewer();
 $('.images').viewer();
 ```
 
-
-
 ## Keyboard support
 
 > Only available in modal mode.
@@ -118,16 +101,12 @@ $('.images').viewer();
 - `Ctrl + 0`: Zoom out to initial size.
 - `Ctrl + 1`: Zoom in to natural size.
 
-
 [⬆ back to top](#table-of-contents)
-
-
 
 ## Options
 
 You may set viewer options with `$().viewer(options)`.
 If you want to change the global default options, You may use `$.fn.viewer.setDefaults(options)`.
-
 
 ### inline
 
@@ -136,14 +115,12 @@ If you want to change the global default options, You may use `$.fn.viewer.setDe
 
 Enable inline mode.
 
-
 ### button
 
 - Type: `Boolean`
 - Default: `true`
 
 Show the button on the top-right of the viewer.
-
 
 ### navbar
 
@@ -157,7 +134,6 @@ Show the button on the top-right of the viewer.
   - `4`: show the navbar only when screen width great then 1200 pixels
 
 Specify the visibility of the navbar.
-
 
 ### title
 
@@ -174,7 +150,6 @@ Specify the visibility of the title (the current image's name and dimensions).
 
 > The name comes from the `alt` attribute of an image element or the image name parsed from URL.
 
-
 ### toolbar
 
 - Type: `Boolean` or `Number`
@@ -188,14 +163,12 @@ Specify the visibility of the title (the current image's name and dimensions).
 
 Specify the visibility of the toolbar.
 
-
 ### tooltip
 
 - Type: `Boolean`
 - Default: `true`
 
 Show the tooltip with image ratio (percentage) when zoom in or zoom out
-
 
 ### movable
 
@@ -204,14 +177,12 @@ Show the tooltip with image ratio (percentage) when zoom in or zoom out
 
 Enable to move the image.
 
-
 ### zoomable
 
 - Type: `Boolean`
 - Default: `true`
 
 Enable to zoom the image.
-
 
 ### rotatable
 
@@ -220,7 +191,6 @@ Enable to zoom the image.
 
 Enable to rotate the image.
 
-
 ### scalable
 
 - Type: `Boolean`
@@ -228,14 +198,12 @@ Enable to rotate the image.
 
 Enable to scale the image.
 
-
 ### transition
 
 - Type: `Boolean`
 - Default: `true`
 
 Enable CSS3 Transition for some special elements.
-
 
 ### fullscreen
 
@@ -246,7 +214,6 @@ Enable to request full screen when play.
 
 > Requires the browser supports [Full Screen API](http://caniuse.com/fullscreen).
 
-
 ### keyboard
 
 - Type: `Boolean`
@@ -254,14 +221,12 @@ Enable to request full screen when play.
 
 Enable keyboard support.
 
-
 ### interval
 
 - Type: `Number`
 - Default: `5000`
 
 Define interval of each image when playing.
-
 
 ### minWidth
 
@@ -272,7 +237,6 @@ Define the minimum width of the viewer.
 
 > Only available in inline mode (set the `inline` option to `true`).
 
-
 ### minHeight
 
 - Type: `Number`
@@ -282,14 +246,12 @@ Define the minimum height of the viewer.
 
 > Only available in inline mode (set the `inline` option to `true`).
 
-
 ### zoomRatio
 
 - Type: `Number`
 - Default: `0.1`
 
 Define the ratio when zoom the image by wheeling mouse.
-
 
 ### minZoomRatio
 
@@ -298,14 +260,12 @@ Define the ratio when zoom the image by wheeling mouse.
 
 Define the min ratio of the image when zoom out.
 
-
 ### maxZoomRatio
 
 - Type: `Number`
 - Default: `100`
 
 Define the max ratio of the image when zoom in.
-
 
 ### zIndex
 
@@ -314,14 +274,12 @@ Define the max ratio of the image when zoom in.
 
 Define the CSS `z-index` value of viewer in modal mode.
 
-
 ### zIndexInline
 
 - Type: `Number`
 - Default: `0`
 
 Define the CSS `z-index` value of viewer in inline mode.
-
 
 ### url
 
@@ -333,74 +291,56 @@ Define where to get the original image URL for viewing.
 > If it is a string, it should be one of the attributes of each image element.
 > If it is a function, it will be called on each image and should return a valid image URL.
 
-
-### build
-
-- Type: `Function`
-- Default: `null`
-
-A shortcut of the "build.viewer" event.
-
-
-### built
+### ready
 
 - Type: `Function`
 - Default: `null`
 
-A shortcut of the "built.viewer" event.
-
+A shortcut of the "ready" event.
 
 ### show
 
 - Type: `Function`
 - Default: `null`
 
-A shortcut of the "show.viewer" event.
-
+A shortcut of the "show" event.
 
 ### shown
 
 - Type: `Function`
 - Default: `null`
 
-A shortcut of the "shown.viewer" event.
-
+A shortcut of the "shown" event.
 
 ### hide
 
 - Type: `Function`
 - Default: `null`
 
-A shortcut of the "hide.viewer" event.
-
+A shortcut of the "hide" event.
 
 ### hidden
 
 - Type: `Function`
 - Default: `null`
 
-A shortcut of the "hidden.viewer" event.
-
+A shortcut of the "hidden" event.
 
 ### view
 
 - Type: `Function`
 - Default: `null`
 
-A shortcut of the "view.viewer" event.
-
+A shortcut of the "view" event.
 
 ### viewed
 
 - Type: `Function`
 - Default: `null`
 
-A shortcut of the "viewed.viewer" event.
-
+A shortcut of the "viewed" event.
 
 [⬆ back to top](#table-of-contents)
-
-
 
 ## Methods
 
@@ -419,9 +359,7 @@ $().viewer({
     $(this).viewer('rotate', 90).viewer('scale', -1, -1);
   }
 }
-
 ```
-
 
 ### show()
 
@@ -429,15 +367,11 @@ Show the viewer.
 
 > Only available in modal mode.
 
-
-
 ### hide()
 
 hide the viewer.
 
 > Only available in modal mode.
-
-
 
 ### view([index])
 
@@ -452,16 +386,13 @@ View one of the images with image's index.
 $().viewer('view', 1); // View the second image
 ```
 
-
 ### prev()
 
 View the previous image.
 
-
 ### next()
 
 View the next image.
-
 
 ### move(offsetX[, offsetY])
 
@@ -484,7 +415,6 @@ $().viewer('move', 0, -1); // Move up
 $().viewer('move', 0, 1);  // Move down
 ```
 
-
 ### moveTo(x[, y])
 
 - **x**:
@@ -497,7 +427,6 @@ $().viewer('move', 0, 1);  // Move down
   - If not present, its default value is `x`.
 
 Move the image to an absolute point.
-
 
 ### zoom(ratio[, hasTooltip])
 
@@ -518,7 +447,6 @@ $().viewer('zoom', 0.1);
 $().viewer('zoom', -0.1);
 ```
 
-
 ### zoomTo(ratio[, hasTooltip])
 
 - **ratio**:
@@ -537,7 +465,6 @@ $().viewer('zoomTo', 0); // Zoom to zero size (0%)
 $().viewer('zoomTo', 1); // Zoom to natural size (100%)
 ```
 
-
 ### rotate(degree)
 
 - **degree**:
@@ -554,7 +481,6 @@ $().viewer('rotate', 90);
 $().viewer('rotate', -90);
 ```
 
-
 ### rotateTo(degree)
 
 - **degree**:
@@ -568,7 +494,6 @@ Rotate the image to an absolute degree.
 $().viewer('rotateTo', 0); // Reset to zero degree
 $().viewer('rotateTo', 360); // Rotate a full round
 ```
-
 
 ### scale(scaleX[, scaleY])
 
@@ -609,7 +534,6 @@ Scale the abscissa of the image.
 $().viewer('scaleX', -1); // Flip horizontal
 ```
 
-
 ### scaleY(scaleY)
 
 - **scaleY**:
@@ -626,16 +550,13 @@ Scale the ordinate of the image.
 $().viewer('scaleY', -1); // Flip vertical
 ```
 
-
 ### play()
 
 Play the images.
 
-
 ### stop()
 
 Stop play.
-
 
 ### full()
 
@@ -643,13 +564,11 @@ Enter modal mode.
 
 > Only available in inline mode.
 
-
 ### exit()
 
 Exit  modal mode.
 
 > Only available in inline mode.
-
 
 ### tooltip()
 
@@ -657,16 +576,13 @@ Show the current ratio of the image with percentage.
 
 > Requires the `tooltip` option set to `true`.
 
-
 ### toggle()
 
 Toggle the image size between its natural size and initial size.
 
-
 ### reset()
 
 Reset the image to its initial state.
-
 
 ### update()
 
@@ -674,69 +590,53 @@ Update the viewer when images changed.
 
 > If you load images dynamically, you can use this method to add the new images to the viewer instance.
 
-
 ### destroy()
 
 Destroy the viewer and remove the instance.
 
-
 [⬆ back to top](#table-of-contents)
-
-
 
 ## Events
 
-### build.viewer
+### ready
 
-This event fires when a viewer instance starts to build.
+This event fires when a viewer instance is ready for viewing.
 
+> In modal mode, this event will not be triggered until you click on one of the images.
 
-### built.viewer
-
-This event fires when a viewer instance has built.
-
-
-### show.viewer
+### show
 
 This event fires when the viewer modal starts to show.
 
 > Only available in modal mode.
 
-
-### shown.viewer
+### shown
 
 This event fires when the viewer modal has shown.
 
 > Only available in modal mode.
 
-
-### hide.viewer
+### hide
 
 This event fires when the viewer modal starts to hide.
 
 > Only available in modal mode.
 
-
-### hidden.viewer
+### hidden
 
 This event fires when the viewer modal has hidden.
 
 > Only available in modal mode.
 
-
-### view.viewer
+### view
 
 This event fires when a viewer starts to show (view) an image.
 
-
-### viewed.viewer
+### viewed
 
 This event fires when a viewer has shown (viewed) an image.
 
-
 [⬆ back to top](#table-of-contents)
-
-
 
 ## No conflict
 
@@ -751,13 +651,9 @@ If you have to use other plugin with the same namespace, just call the `$.fn.vie
 </script>
 ```
 
-
-
 ## Contributing
 
 Please read through our [contributing guidelines](CONTRIBUTING.md).
-
-
 
 ## Browser support
 
@@ -770,17 +666,12 @@ Please read through our [contributing guidelines](CONTRIBUTING.md).
 
 As a jQuery plugin, you also need to see the [jQuery Browser Support](http://jquery.com/browser-support/).
 
-
-
 ## Versioning
 
 Maintained under the [Semantic Versioning guidelines](http://semver.org/).
 
-
-
 ## License
 
 [MIT](http://opensource.org/licenses/MIT) © [Fengyuan Chen](http://chenfengyuan.com)
-
 
 [⬆ back to top](#table-of-contents)

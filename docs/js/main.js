@@ -7,67 +7,61 @@ $(function () {
   var $toggles = $('.docs-toggles');
   var $buttons = $('.docs-buttons');
   var options = {
-        // inline: true,
-        url: 'data-original',
-        build: function (e) {
-          console.log(e.type);
-        },
-        built: function (e) {
-          console.log(e.type);
-        },
-        show: function (e) {
-          console.log(e.type);
-        },
-        shown: function (e) {
-          console.log(e.type);
-        },
-        hide: function (e) {
-          console.log(e.type);
-        },
-        hidden: function (e) {
-          console.log(e.type);
-        },
-        view: function (e) {
-          console.log(e.type);
-        },
-        viewed: function (e) {
-          console.log(e.type);
-        }
-      };
+    // inline: true,
+    url: 'data-original',
+    ready: function (e) {
+      console.log(e.type);
+    },
+    show: function (e) {
+      console.log(e.type);
+    },
+    shown: function (e) {
+      console.log(e.type);
+    },
+    hide: function (e) {
+      console.log(e.type);
+    },
+    hidden: function (e) {
+      console.log(e.type);
+    },
+    view: function (e) {
+      console.log(e.type);
+    },
+    viewed: function (e) {
+      console.log(e.type);
+    }
+  };
 
   function toggleButtons(mode) {
     if (/modal|inline|none/.test(mode)) {
-      $buttons.
-        find('button[data-enable]').
-        prop('disabled', true).
-          filter('[data-enable*="' + mode + '"]').
-          prop('disabled', false);
+      $buttons
+        .find('button[data-enable]')
+          .prop('disabled', true)
+        .filter('[data-enable*="' + mode + '"]')
+          .prop('disabled', false);
     }
   }
 
   $images.on({
-    'build.viewer': function (e) {
+    ready:  function (e) {
       console.log(e.type);
     },
-    'built.viewer':  function (e) {
+    show:  function (e) {
       console.log(e.type);
     },
-    'show.viewer':  function (e) {
+    shown:  function (e) {
       console.log(e.type);
     },
-    'shown.viewer':  function (e) {
+    hide:  function (e) {
       console.log(e.type);
     },
-    'hide.viewer':  function (e) {
+    hidden: function (e) {
       console.log(e.type);
     },
-    'hidden.viewer': function (e) {
+    view:  function (e) {
       console.log(e.type);
     },
-    'view.viewer':  function (e) {
-      console.log(e.type);
-    },
-    'viewed.viewer': function (e) {
+    viewed: function (e) {
       console.log(e.type);
     }
   }).viewer(options);
@@ -107,4 +101,5 @@ $(function () {
     }
   });
 
+  $('[data-toggle="tooltip"]').tooltip();
 });
