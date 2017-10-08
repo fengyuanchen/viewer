@@ -37,12 +37,12 @@
 
 ```text
 dist/
-├── viewer.css       ( 8 KB)
-├── viewer.min.css   ( 7 KB)
-├── viewer.js        (50 KB, UMD)
-├── viewer.min.js    (22 KB, UMD, compressed)
-├── viewer.common.js (50 KB, CommonJS, default)
-└── viewer.esm.js    (50 KB, ES Module)
+├── viewer.css
+├── viewer.min.css   (compressed)
+├── viewer.js        (UMD)
+├── viewer.min.js    (UMD, compressed)
+├── viewer.common.js (CommonJS, default)
+└── viewer.esm.js    (ES Module)
 ```
 
 ## Getting started
