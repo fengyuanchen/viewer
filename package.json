@@ -30,18 +30,18 @@
   ],
   "scripts": {
     "build": "npm run build:css && npm run build:js",
-    "build:css": "postcss src/css/viewer.css -o dist/viewer.css",
+    "build:css": "postcss src/css/viewer.css -o dist/viewer.css -m",
     "build:js": "rollup -c",
     "compress": "npm run compress:css && npm run compress:js",
-    "compress:css": "postcss dist/viewer.css -u cssnano -m -o dist/viewer.min.css",
+    "compress:css": "postcss dist/viewer.css -u cssnano -o dist/viewer.min.css -m",
     "compress:js": "uglifyjs dist/viewer.js -o dist/viewer.min.js -c -m --comments /^!/",
     "copy": "cpy dist/viewer.css docs/css",
     "lint": "eslint src --fix",
     "postbuild": "npm run compress && npm run copy",
     "prebuild": "npm run lint",
     "start": "npm-run-all --parallel watch:*",
-    "watch:css": "postcss src/css/viewer.css -o docs/css/viewer.css -w",
-    "watch:js": "rollup -c -w -m"
+    "watch:css": "postcss src/css/viewer.css -o docs/css/viewer.css -m -w",
+    "watch:js": "rollup -c -m -w"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
