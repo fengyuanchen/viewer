@@ -10,9 +10,9 @@ import {
   EVENT_VIEWED,
 } from './constants';
 import {
-  objectKeys,
-  getPointer,
   getImageNaturalSizes,
+  getPointer,
+  objectKeys,
 } from './utilities';
 
 export default {

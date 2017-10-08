@@ -15,16 +15,16 @@ import {
   EVENT_LOAD,
   EVENT_SHOW,
   EVENT_SHOWN,
-  EVENT_TRANSITIONEND,
+  EVENT_TRANSITION_END,
   EVENT_VIEW,
   EVENT_VIEWED,
   NAMESPACE,
 } from './constants';
 import {
-  isUndefined,
-  isNumber,
-  objectKeys,
   getPointersCenter,
+  isNumber,
+  isUndefined,
+  objectKeys,
 } from './utilities';
 
 export default {
@@ -66,7 +66,7 @@ export default {
       // Force reflow to enable CSS3 transition
       // eslint-disable-next-line
       $viewer[0].offsetWidth;
-      $viewer.one(EVENT_TRANSITIONEND, $.proxy(this.shown, this)).addClass(CLASS_IN);
+      $viewer.one(EVENT_TRANSITION_END, $.proxy(this.shown, this)).addClass(CLASS_IN);
     } else {
       $viewer.addClass(CLASS_IN);
       this.shown();
@@ -93,8 +93,8 @@ export default {
 
     if (this.viewed && options.transition) {
       this.transitioning = true;
-      this.$image.one(EVENT_TRANSITIONEND, () => {
-        $viewer.one(EVENT_TRANSITIONEND, $.proxy(this.hidden, this)).removeClass(CLASS_IN);
+      this.$image.one(EVENT_TRANSITION_END, () => {
+        $viewer.one(EVENT_TRANSITION_END, $.proxy(this.hidden, this)).removeClass(CLASS_IN);
       });
       this.zoomTo(0, false, false, true);
     } else {
@@ -226,8 +226,8 @@ export default {
   /**
    * Zoom the image with a relative ratio.
    * @param {number} ratio - The target ratio.
-   * @param {boolean} [hasTooltip] - Indicates if it has a tooltip or not.
-   * @param {Event} [_event] - The related event if any.
+   * @param {boolean} [hasTooltip=false] - Indicates if it has a tooltip or not.
+   * @param {Event} [_event=null] - The related event if any.
    */
   zoom(ratio, hasTooltip = false, _event = null) {
     const { image } = this;
@@ -246,9 +246,9 @@ export default {
   /**
    * Zoom the image to an absolute ratio.
    * @param {number} ratio - The target ratio.
-   * @param {boolean} [hasTooltip] - Indicates if it has a tooltip or not.
-   * @param {Event} [_event] - The related event if any.
-   * @param {Event} [_zoomable] - Indicates if the current zoom is available or not.
+   * @param {boolean} [hasTooltip=false] - Indicates if it has a tooltip or not.
+   * @param {Event} [_event=null] - The related event if any.
+   * @param {Event} [_zoomable=false] - Indicates if the current zoom is available or not.
    */
   zoomTo(ratio, hasTooltip = false, _event = null, _zoomable = false) {
     const { options, image, pointers } = this;
@@ -535,7 +535,7 @@ export default {
     if (!this.tooltiping) {
       if (options.transition) {
         if (this.fading) {
-          $tooltip.trigger(EVENT_TRANSITIONEND);
+          $tooltip.trigger(EVENT_TRANSITION_END);
         }
 
         $tooltip.addClass(classes);
@@ -553,7 +553,7 @@ export default {
 
     this.tooltiping = setTimeout(() => {
       if (options.transition) {
-        $tooltip.one(EVENT_TRANSITIONEND, () => {
+        $tooltip.one(EVENT_TRANSITION_END, () => {
           $tooltip.removeClass(classes);
           this.fading = false;
         }).removeClass(CLASS_IN);

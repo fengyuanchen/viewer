@@ -13,18 +13,19 @@ import {
   CLASS_FULLSCREEN,
   CLASS_HIDE,
   CLASS_INVISIBLE,
-  EVENT_READY,
   EVENT_CLICK,
   EVENT_LOAD,
+  EVENT_READY,
   NAMESPACE,
 } from './constants';
 import {
   getResponsiveClass,
+  isUndefined,
 } from './utilities';
 
 class Viewer {
   /**
-   * Start the new Viewer.
+   * Create a new Viewer.
    * @param {Element} element - The target element for viewing.
    * @param {Object} [options={}] - The configuration options.
    */
@@ -67,7 +68,7 @@ class Viewer {
     }
 
     // Override `transition` option if it is not supported
-    if (typeof document.createElement(NAMESPACE).style.transition === 'undefined') {
+    if (isUndefined(document.createElement(NAMESPACE).style.transition)) {
       options.transition = false;
     }
 
@@ -183,7 +184,6 @@ class Viewer {
 
   /**
    * Change the default options.
-   * @static
    * @param {Object} options - The new default options.
    */
   static setDefaults(options) {

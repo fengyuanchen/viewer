@@ -2,14 +2,14 @@ import $ from 'jquery';
 import {
   CLASS_TRANSITION,
   EVENT_LOAD,
+  EVENT_TRANSITION_END,
   EVENT_VIEWED,
-  EVENT_TRANSITIONEND,
 } from './constants';
 import {
-  isString,
   getImageNameFromURL,
   getImageNaturalSizes,
   getTransformValues,
+  isString,
 } from './utilities';
 
 export default {
@@ -182,7 +182,7 @@ export default {
 
     if ($.isFunction(callback)) {
       if (this.transitioning) {
-        $image.one(EVENT_TRANSITIONEND, callback);
+        $image.one(EVENT_TRANSITION_END, callback);
       } else {
         callback();
       }

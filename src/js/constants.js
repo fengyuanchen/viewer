@@ -41,5 +41,5 @@ export const EVENT_POINTER_DOWN = PointerEvent ? 'pointerdown' : 'touchstart mou
 export const EVENT_POINTER_MOVE = PointerEvent ? 'pointermove' : 'mousemove touchmove';
 export const EVENT_POINTER_UP = PointerEvent ? 'pointerup pointercancel' : 'touchend touchcancel mouseup';
 export const EVENT_RESIZE = 'resize';
-export const EVENT_TRANSITIONEND = 'transitionend';
+export const EVENT_TRANSITION_END = 'transitionend';
 export const EVENT_WHEEL = 'wheel mousewheel DOMMouseScroll';
