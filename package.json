@@ -9,7 +9,7 @@
   "repository": "fengyuanchen/viewer",
   "homepage": "https://fengyuanchen.github.io/viewer",
   "author": {
-    "name": "Fengyuan Chen",
+    "name": "Chen Fengyuan",
     "url": "http://chenfengyuan.com"
   },
   "files": [
@@ -37,8 +37,7 @@
     "compress:js": "uglifyjs dist/viewer.js -o dist/viewer.min.js -c -m --comments /^!/",
     "copy": "cpy dist/viewer.css docs/css",
     "lint": "eslint src --fix",
-    "postbuild": "npm run compress && npm run copy",
-    "prebuild": "npm run lint",
+    "release": "npm run lint && npm run build && npm run compress && npm run copy",
     "start": "npm-run-all --parallel watch:*",
     "watch:css": "postcss src/css/viewer.css -o docs/css/viewer.css -m -w",
     "watch:js": "rollup -c -m -w"
