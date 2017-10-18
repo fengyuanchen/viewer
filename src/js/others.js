@@ -12,8 +12,6 @@ import {
   getMaxZoomRatio,
 } from './utilities';
 
-const { document } = window;
-
 export default {
   // A shortcut for triggering custom events
   trigger(type, data) {
@@ -61,6 +59,8 @@ export default {
   },
 
   requestFullscreen() {
+    const { document } = window;
+
     if (this.fulled && !document.fullscreenElement && !document.mozFullScreenElement &&
       !document.webkitFullscreenElement && !document.msFullscreenElement) {
       const { documentElement } = document;

@@ -191,6 +191,8 @@ class Viewer {
   }
 }
 
-$.extend(Viewer.prototype, render, events, handlers, methods, others);
+if ($.extend) {
+  $.extend(Viewer.prototype, render, events, handlers, methods, others);
+}
 
 export default Viewer;
