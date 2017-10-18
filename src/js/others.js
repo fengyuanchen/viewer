@@ -22,6 +22,14 @@ export default {
     return e;
   },
 
+  open() {
+    this.$body.addClass(CLASS_OPEN).css('paddingRight', this.scrollbarWidth);
+  },
+
+  close() {
+    this.$body.removeClass(CLASS_OPEN).css('padding-right', 0);
+  },
+
   shown() {
     const { options } = this;
 
@@ -46,7 +54,7 @@ export default {
     this.fulled = false;
     this.visible = false;
     this.unbind();
-    this.$body.removeClass(CLASS_OPEN);
+    this.close();
     this.$viewer.addClass(CLASS_HIDE);
     this.resetList();
     this.resetImage();

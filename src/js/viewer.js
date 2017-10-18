@@ -77,6 +77,7 @@ class Viewer {
     this.count = 0;
     this.$images = $images;
     this.$body = $('body');
+    this.scrollbarWidth = window.innerWidth - document.body.clientWidth;
 
     if (options.inline) {
       $element.one(EVENT_READY, () => {

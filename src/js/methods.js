@@ -52,7 +52,7 @@ export default {
       return;
     }
 
-    this.$body.addClass(CLASS_OPEN);
+    this.open();
     $viewer.removeClass(CLASS_HIDE);
     $element.one(EVENT_SHOWN, () => {
       this.view(this.target ? this.$images.index(this.target) : this.index);
@@ -456,7 +456,7 @@ export default {
     }
 
     this.fulled = true;
-    this.$body.addClass(CLASS_OPEN);
+    this.open();
     this.$button.addClass(CLASS_FULLSCREEN_EXIT);
 
     if (options.transition) {
@@ -491,7 +491,7 @@ export default {
     const { options, $image, $list } = this;
 
     this.fulled = false;
-    this.$body.removeClass(CLASS_OPEN);
+    this.close();
     this.$button.removeClass(CLASS_FULLSCREEN_EXIT);
 
     if (options.transition) {
