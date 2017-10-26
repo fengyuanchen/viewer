@@ -34,7 +34,7 @@ export default {
 
     this.$canvas.on(EVENT_POINTER_DOWN, $.proxy(this.pointerdown, this));
 
-    $(document)
+    $(this.element.ownerDocument)
       .on(EVENT_POINTER_MOVE, (this.onPointerMove = proxy(this.pointermove, this)))
       .on(EVENT_POINTER_UP, (this.onPointerUp = proxy(this.pointerup, this)))
       .on(EVENT_KEY_DOWN, (this.onKeyDown = proxy(this.keydown, this)));
@@ -60,7 +60,7 @@ export default {
 
     this.$canvas.off(EVENT_POINTER_DOWN, this.pointerdown);
 
-    $(document)
+    $(this.element.ownerDocument)
       .off(EVENT_POINTER_MOVE, this.onPointerMove)
       .off(EVENT_POINTER_UP, this.onPointerUp)
       .off(EVENT_KEY_DOWN, this.onKeyDown);
