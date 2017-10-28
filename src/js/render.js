@@ -63,25 +63,23 @@ export default {
       const { src } = image;
       let { url } = options;
 
-      if (!src) {
-        return;
-      }
-
       if (isString(url)) {
         url = image.getAttribute(url);
       } else if ($.isFunction(url)) {
         url = url.call(image, image);
       }
 
-      list.push('<li>' +
-        '<img' +
-          ` src="${src}"` +
-          ' data-action="view"' +
-          ` data-index="${i}"` +
-          ` data-original-url="${url || src}"` +
-          ` alt="${alt}"` +
-        '>' +
-      '</li>');
+      if (src || url) {
+        list.push('<li>' +
+          '<img' +
+            ` src="${src || url}"` +
+            ' data-action="view"' +
+            ` data-index="${i}"` +
+            ` data-original-url="${url || src}"` +
+            ` alt="${alt}"` +
+          '>' +
+        '</li>');
+      }
     });
 
     $list.html(list.join('')).find('img').one(EVENT_LOAD, {
