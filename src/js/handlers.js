@@ -299,10 +299,6 @@ export default {
   },
 
   pointerup(e) {
-    if (!this.viewed) {
-      return;
-    }
-
     const { action, pointers } = this;
     const { originalEvent } = e;
 
