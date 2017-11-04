@@ -1,5 +1,7 @@
 # Viewer
 
+[![Downloads](https://img.shields.io/npm/dm/imageviewer.svg)](https://www.npmjs.com/package/imageviewer) [![Version](https://img.shields.io/npm/v/imageviewer.svg)](https://www.npmjs.com/package/imageviewer)
+
 > A simple jQuery image viewing plugin.
 
 - [Website](https://fengyuanchen.github.io/viewer)
