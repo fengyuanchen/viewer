@@ -258,7 +258,7 @@ export default {
 
     if (objectKeys(pointers).length > 1) {
       action = ACTION_ZOOM;
-    } else if ((e.pointerType === 'touch' || e.type === 'touchmove') && this.isSwitchable()) {
+    } else if ((e.pointerType === 'touch' || e.type === 'touchstart') && this.isSwitchable()) {
       action = ACTION_SWITCH;
     }
 
