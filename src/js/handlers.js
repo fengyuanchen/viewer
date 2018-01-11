@@ -287,7 +287,7 @@ export default {
     } else {
       $.extend(
         pointers[(originalEvent && originalEvent.pointerId) || 0],
-        getPointer(e, true),
+        getPointer(originalEvent || e, true),
       );
     }
 
