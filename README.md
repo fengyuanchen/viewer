@@ -6,7 +6,7 @@
 
 - [Demo](https://fengyuanchen.github.io/viewer)
 - [Viewer.js](https://github.com/fengyuanchen/viewerjs) - JavaScript image viewer (**recommended**)
-- [viewer](https://github.com/fengyuanchen/viewer) - A jQuery plugin wrapper for Viewer.js (**recommended** for jQuery users to use this instead of Viewer)
+- [jquery-viewer](https://github.com/fengyuanchen/jquery-viewer) - A jQuery plugin wrapper for Viewer.js (**recommended** for jQuery users to use this instead of Viewer)
 
 ## Main
 
