@@ -4,40 +4,7 @@ const nodeResolve = require('rollup-plugin-node-resolve');
 const pkg = require('./package');
 
 const now = new Date();
-
-module.exports = {
-  input: 'src/js/index.js',
-  output: [
-    {
-      file: 'dist/viewer.js',
-      format: 'umd',
-    },
-    {
-      file: 'dist/viewer.common.js',
-      format: 'cjs',
-    },
-    {
-      file: 'dist/viewer.esm.js',
-      format: 'es',
-    },
-    {
-      file: 'docs/js/viewer.js',
-      format: 'umd',
-    },
-  ],
-  name: 'Viewer',
-  external: ['jquery'],
-  globals: {
-    jquery: 'jQuery',
-  },
-  plugins: [
-    nodeResolve(),
-    commonjs(),
-    babel({
-      exclude: 'node_modules/**',
-    }),
-  ],
-  banner: `/*!
+const banner = `/*!
  * Viewer v${pkg.version}
  * https://github.com/${pkg.repository}
  *
@@ -46,5 +13,52 @@ module.exports = {
  *
  * Date: ${now.toISOString()}
  */
-`,
+`;
+
+module.exports = {
+  input: 'src/index.js',
+  output: [
+    {
+      banner,
+      file: 'dist/viewer.js',
+      format: 'umd',
+      name: 'Viewer',
+      globals: {
+        jquery: 'jQuery',
+      },
+    },
+    {
+      banner,
+      file: 'dist/viewer.common.js',
+      format: 'cjs',
+      globals: {
+        jquery: 'jQuery',
+      },
+    },
+    {
+      banner,
+      file: 'dist/viewer.esm.js',
+      format: 'es',
+      globals: {
+        jquery: 'jQuery',
+      },
+    },
+    {
+      banner,
+      file: 'docs/js/viewer.js',
+      format: 'umd',
+      name: 'Viewer',
+      globals: {
+        jquery: 'jQuery',
+      },
+    },
+  ],
+  external: ['jquery'],
+  plugins: [
+    nodeResolve(),
+    commonjs(),
+    babel({
+      plugins: ['external-helpers'],
+    }),
+  ],
 };
