@@ -1,8 +1,6 @@
 import $ from 'jquery';
 import Viewer from './viewer';
-import {
-  NAMESPACE,
-} from './constants';
+import { NAMESPACE } from './constants';
 import {
   isString,
   isUndefined,
@@ -47,4 +45,4 @@ if ($.fn) {
     $.fn.viewer = AnotherViewer;
     return this;
   };
-};
+}

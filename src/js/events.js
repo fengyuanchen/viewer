@@ -11,9 +11,7 @@ import {
   EVENT_VIEWED,
   EVENT_WHEEL,
 } from './constants';
-import {
-  proxy,
-} from './utilities';
+import { proxy } from './utilities';
 
 export default {
   bind() {

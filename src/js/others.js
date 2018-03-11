@@ -8,9 +8,7 @@ import {
   EVENT_HIDDEN,
   EVENT_SHOWN,
 } from './constants';
-import {
-  getMaxZoomRatio,
-} from './utilities';
+import { getMaxZoomRatio } from './utilities';
 
 export default {
   // A shortcut for triggering custom events
