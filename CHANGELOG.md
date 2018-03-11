@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0 (Mar 11, 2018)
+
+- Emulate scroll bar width when modal opening.
+- Disallow to show again if it had shown.
+
 ## 0.6.0 (Oct 7, 2017)
 
 - Refactor in ES6.

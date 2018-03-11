@@ -1,12 +1,13 @@
 /*!
- * Viewer v0.6.0
+ * Viewer v0.7.0
  * https://github.com/fengyuanchen/viewer
  *
- * Copyright (c) 2014-2017 Fengyuan Chen
+ * Copyright (c) 2015-2018 Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2017-10-07T09:53:36.889Z
+ * Date: 2018-03-11T02:48:43.666Z
  */
+
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
@@ -93,10 +94,7 @@ var DEFAULTS = {
 
 var TEMPLATE = '<div class="viewer-container">' + '<div class="viewer-canvas"></div>' + '<div class="viewer-footer">' + '<div class="viewer-title"></div>' + '<ul class="viewer-toolbar">' + '<li role="button" class="viewer-zoom-in" data-action="zoom-in"></li>' + '<li role="button" class="viewer-zoom-out" data-action="zoom-out"></li>' + '<li role="button" class="viewer-one-to-one" data-action="one-to-one"></li>' + '<li role="button" class="viewer-reset" data-action="reset"></li>' + '<li role="button" class="viewer-prev" data-action="prev"></li>' + '<li role="button" class="viewer-play" data-action="play"></li>' + '<li role="button" class="viewer-next" data-action="next"></li>' + '<li role="button" class="viewer-rotate-left" data-action="rotate-left"></li>' + '<li role="button" class="viewer-rotate-right" data-action="rotate-right"></li>' + '<li role="button" class="viewer-flip-horizontal" data-action="flip-horizontal"></li>' + '<li role="button" class="viewer-flip-vertical" data-action="flip-vertical"></li>' + '</ul>' + '<div class="viewer-navbar">' + '<ul class="viewer-list"></ul>' + '</div>' + '</div>' + '<div class="viewer-tooltip"></div>' + '<div role="button" class="viewer-button" data-action="mix"></div>' + '<div class="viewer-player"></div>' + '</div>';
 
-var _window = window;
-var PointerEvent = _window.PointerEvent;
-
-
+var WINDOW = typeof window !== 'undefined' ? window : {};
 var NAMESPACE = 'viewer';
 
 // Actions
@@ -134,11 +132,11 @@ var EVENT_CLICK = 'click';
 var EVENT_DRAG_START = 'dragstart';
 var EVENT_KEY_DOWN = 'keydown';
 var EVENT_LOAD = 'load';
-var EVENT_POINTER_DOWN = PointerEvent ? 'pointerdown' : 'touchstart mousedown';
-var EVENT_POINTER_MOVE = PointerEvent ? 'pointermove' : 'mousemove touchmove';
-var EVENT_POINTER_UP = PointerEvent ? 'pointerup pointercancel' : 'touchend touchcancel mouseup';
+var EVENT_POINTER_DOWN = WINDOW.PointerEvent ? 'pointerdown' : 'touchstart mousedown';
+var EVENT_POINTER_MOVE = WINDOW.PointerEvent ? 'pointermove' : 'mousemove touchmove';
+var EVENT_POINTER_UP = WINDOW.PointerEvent ? 'pointerup pointercancel' : 'touchend touchcancel mouseup';
 var EVENT_RESIZE = 'resize';
-var EVENT_TRANSITIONEND = 'transitionend';
+var EVENT_TRANSITION_END = 'transitionend';
 var EVENT_WHEEL = 'wheel mousewheel DOMMouseScroll';
 
 /**
@@ -153,7 +151,7 @@ function isString(value) {
 /**
  * Check if the given value is not a number.
  */
-var isNaN = Number.isNaN || window.isNaN;
+var isNaN = Number.isNaN || WINDOW.isNaN;
 
 /**
  * Check if the given value is a number.
@@ -178,7 +176,7 @@ function isUndefined(value) {
  * Custom proxy to avoid jQuery's guid.
  * @param {Function} fn - The target function.
  * @param {Object} context - The new context for the function.
- * @returns {boolean} The new function.
+ * @returns {Function} The new function.
  */
 function proxy(fn, context) {
   for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
@@ -248,14 +246,18 @@ function getImageNameFromURL(url) {
   return isString(url) ? url.replace(/^.*\//, '').replace(/[?&#].*$/, '') : '';
 }
 
+var navigator = WINDOW.navigator;
+
+var IS_SAFARI_OR_UIWEBVIEW = navigator && /(Macintosh|iPhone|iPod|iPad).*AppleWebKit/i.test(navigator.userAgent);
+
 /**
  * Get an image's natural sizes.
  * @param {string} image - The target image.
  * @param {Function} callback - The callback function.
  */
 function getImageNaturalSizes(image, callback) {
-  // Modern browsers and IE9+
-  if (image.naturalWidth) {
+  // Modern browsers (except Safari)
+  if (image.naturalWidth && !IS_SAFARI_OR_UIWEBVIEW) {
     callback(image.naturalWidth, image.naturalHeight);
     return;
   }
@@ -429,17 +431,15 @@ var render = {
       var url = options.url;
 
 
-      if (!src) {
-        return;
-      }
-
       if (isString(url)) {
         url = image.getAttribute(url);
       } else if ($.isFunction(url)) {
         url = url.call(image, image);
       }
 
-      list.push('<li>' + '<img' + (' src="' + src + '"') + ' data-action="view"' + (' data-index="' + i + '"') + (' data-original-url="' + (url || src) + '"') + (' alt="' + alt + '"') + '>' + '</li>');
+      if (src || url) {
+        list.push('<li>' + '<img' + (' src="' + (src || url) + '"') + ' data-action="view"' + (' data-index="' + i + '"') + (' data-original-url="' + (url || src) + '"') + (' alt="' + alt + '"') + '>' + '</li>');
+      }
     });
 
     $list.html(list.join('')).find('img').one(EVENT_LOAD, {
@@ -543,7 +543,7 @@ var render = {
 
     if ($.isFunction(callback)) {
       if (this.transitioning) {
-        $image.one(EVENT_TRANSITIONEND, callback);
+        $image.one(EVENT_TRANSITION_END, callback);
       } else {
         callback();
       }
@@ -575,7 +575,7 @@ var events = {
 
     this.$canvas.on(EVENT_POINTER_DOWN, $.proxy(this.pointerdown, this));
 
-    $(document).on(EVENT_POINTER_MOVE, this.onPointerMove = proxy(this.pointermove, this)).on(EVENT_POINTER_UP, this.onPointerUp = proxy(this.pointerup, this)).on(EVENT_KEY_DOWN, this.onKeyDown = proxy(this.keydown, this));
+    $(this.element.ownerDocument).on(EVENT_POINTER_MOVE, this.onPointerMove = proxy(this.pointermove, this)).on(EVENT_POINTER_UP, this.onPointerUp = proxy(this.pointerup, this)).on(EVENT_KEY_DOWN, this.onKeyDown = proxy(this.keydown, this));
 
     $(window).on(EVENT_RESIZE, this.onResize = proxy(this.resize, this));
   },
@@ -596,7 +596,7 @@ var events = {
 
     this.$canvas.off(EVENT_POINTER_DOWN, this.pointerdown);
 
-    $(document).off(EVENT_POINTER_MOVE, this.onPointerMove).off(EVENT_POINTER_UP, this.onPointerUp).off(EVENT_KEY_DOWN, this.onKeyDown);
+    $(this.element.ownerDocument).off(EVENT_POINTER_MOVE, this.onPointerMove).off(EVENT_POINTER_UP, this.onPointerUp).off(EVENT_KEY_DOWN, this.onKeyDown);
 
     $(window).off(EVENT_RESIZE, this.onResize);
   }
@@ -838,7 +838,7 @@ var handlers = {
 
     if (objectKeys(pointers).length > 1) {
       action = ACTION_ZOOM;
-    } else if ((e.pointerType === 'touch' || e.type === 'touchmove') && this.isSwitchable()) {
+    } else if ((e.pointerType === 'touch' || e.type === 'touchstart') && this.isSwitchable()) {
       action = ACTION_SWITCH;
     }
 
@@ -864,7 +864,7 @@ var handlers = {
         $.extend(pointers[touch.identifier], getPointer(touch, true));
       });
     } else {
-      $.extend(pointers[originalEvent && originalEvent.pointerId || 0], getPointer(e, true));
+      $.extend(pointers[originalEvent && originalEvent.pointerId || 0], getPointer(originalEvent || e, true));
     }
 
     if (action === ACTION_MOVE && this.options.transition && $image.hasClass(CLASS_TRANSITION)) {
@@ -874,10 +874,6 @@ var handlers = {
     this.change(e);
   },
   pointerup: function pointerup(e) {
-    if (!this.viewed) {
-      return;
-    }
-
     var action = this.action,
         pointers = this.pointers;
     var originalEvent = e.originalEvent;
@@ -978,7 +974,7 @@ var methods = {
         options = this.options;
 
 
-    if (options.inline || this.transitioning) {
+    if (options.inline || this.transitioning || this.visible) {
       return;
     }
 
@@ -997,7 +993,7 @@ var methods = {
       return;
     }
 
-    this.$body.addClass(CLASS_OPEN);
+    this.open();
     $viewer.removeClass(CLASS_HIDE);
     $element.one(EVENT_SHOWN, function () {
       _this.view(_this.target ? _this.$images.index(_this.target) : _this.index);
@@ -1011,7 +1007,7 @@ var methods = {
       // Force reflow to enable CSS3 transition
       // eslint-disable-next-line
       $viewer[0].offsetWidth;
-      $viewer.one(EVENT_TRANSITIONEND, $.proxy(this.shown, this)).addClass(CLASS_IN);
+      $viewer.one(EVENT_TRANSITION_END, $.proxy(this.shown, this)).addClass(CLASS_IN);
     } else {
       $viewer.addClass(CLASS_IN);
       this.shown();
@@ -1043,8 +1039,8 @@ var methods = {
 
     if (this.viewed && options.transition) {
       this.transitioning = true;
-      this.$image.one(EVENT_TRANSITIONEND, function () {
-        $viewer.one(EVENT_TRANSITIONEND, $.proxy(_this2.hidden, _this2)).removeClass(CLASS_IN);
+      this.$image.one(EVENT_TRANSITION_END, function () {
+        $viewer.one(EVENT_TRANSITION_END, $.proxy(_this2.hidden, _this2)).removeClass(CLASS_IN);
       });
       this.zoomTo(0, false, false, true);
     } else {
@@ -1190,8 +1186,8 @@ var methods = {
   /**
    * Zoom the image with a relative ratio.
    * @param {number} ratio - The target ratio.
-   * @param {boolean} [hasTooltip] - Indicates if it has a tooltip or not.
-   * @param {Event} [_event] - The related event if any.
+   * @param {boolean} [hasTooltip=false] - Indicates if it has a tooltip or not.
+   * @param {Event} [_event=null] - The related event if any.
    */
   zoom: function zoom(ratio) {
     var hasTooltip = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -1216,9 +1212,9 @@ var methods = {
   /**
    * Zoom the image to an absolute ratio.
    * @param {number} ratio - The target ratio.
-   * @param {boolean} [hasTooltip] - Indicates if it has a tooltip or not.
-   * @param {Event} [_event] - The related event if any.
-   * @param {Event} [_zoomable] - Indicates if the current zoom is available or not.
+   * @param {boolean} [hasTooltip=false] - Indicates if it has a tooltip or not.
+   * @param {Event} [_event=null] - The related event if any.
+   * @param {Event} [_zoomable=false] - Indicates if the current zoom is available or not.
    */
   zoomTo: function zoomTo(ratio) {
     var hasTooltip = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -1454,7 +1450,7 @@ var methods = {
     }
 
     this.fulled = true;
-    this.$body.addClass(CLASS_OPEN);
+    this.open();
     this.$button.addClass(CLASS_FULLSCREEN_EXIT);
 
     if (options.transition) {
@@ -1495,7 +1491,7 @@ var methods = {
 
 
     this.fulled = false;
-    this.$body.removeClass(CLASS_OPEN);
+    this.close();
     this.$button.removeClass(CLASS_FULLSCREEN_EXIT);
 
     if (options.transition) {
@@ -1541,7 +1537,7 @@ var methods = {
     if (!this.tooltiping) {
       if (options.transition) {
         if (this.fading) {
-          $tooltip.trigger(EVENT_TRANSITIONEND);
+          $tooltip.trigger(EVENT_TRANSITION_END);
         }
 
         $tooltip.addClass(classes);
@@ -1559,7 +1555,7 @@ var methods = {
 
     this.tooltiping = setTimeout(function () {
       if (options.transition) {
-        $tooltip.one(EVENT_TRANSITIONEND, function () {
+        $tooltip.one(EVENT_TRANSITION_END, function () {
           $tooltip.removeClass(classes);
           _this7.fading = false;
         }).removeClass(CLASS_IN);
@@ -1684,10 +1680,6 @@ var methods = {
   }
 };
 
-var _window$1 = window;
-var document$1 = _window$1.document;
-
-
 var others = {
   // A shortcut for triggering custom events
   trigger: function trigger(type, data) {
@@ -1696,6 +1688,12 @@ var others = {
     this.$element.trigger(e);
 
     return e;
+  },
+  open: function open() {
+    this.$body.addClass(CLASS_OPEN).css('paddingRight', this.scrollbarWidth);
+  },
+  close: function close() {
+    this.$body.removeClass(CLASS_OPEN).css('padding-right', 0);
   },
   shown: function shown() {
     var options = this.options;
@@ -1722,7 +1720,7 @@ var others = {
     this.fulled = false;
     this.visible = false;
     this.unbind();
-    this.$body.removeClass(CLASS_OPEN);
+    this.close();
     this.$viewer.addClass(CLASS_HIDE);
     this.resetList();
     this.resetImage();
@@ -1734,8 +1732,12 @@ var others = {
     this.trigger(EVENT_HIDDEN);
   },
   requestFullscreen: function requestFullscreen() {
-    if (this.fulled && !document$1.fullscreenElement && !document$1.mozFullScreenElement && !document$1.webkitFullscreenElement && !document$1.msFullscreenElement) {
-      var documentElement = document$1.documentElement;
+    var _window = window,
+        document = _window.document;
+
+
+    if (this.fulled && !document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+      var documentElement = document.documentElement;
 
 
       if (documentElement.requestFullscreen) {
@@ -1751,14 +1753,14 @@ var others = {
   },
   exitFullscreen: function exitFullscreen() {
     if (this.fulled) {
-      if (document$1.exitFullscreen) {
-        document$1.exitFullscreen();
-      } else if (document$1.msExitFullscreen) {
-        document$1.msExitFullscreen();
-      } else if (document$1.mozCancelFullScreen) {
-        document$1.mozCancelFullScreen();
-      } else if (document$1.webkitExitFullscreen) {
-        document$1.webkitExitFullscreen();
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
       }
     }
   },
@@ -1820,7 +1822,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Viewer = function () {
   /**
-   * Start the new Viewer.
+   * Create a new Viewer.
    * @param {Element} element - The target element for viewing.
    * @param {Object} [options={}] - The configuration options.
    */
@@ -1874,7 +1876,7 @@ var Viewer = function () {
       }
 
       // Override `transition` option if it is not supported
-      if (typeof document.createElement(NAMESPACE).style.transition === 'undefined') {
+      if (isUndefined(document.createElement(NAMESPACE).style.transition)) {
         options.transition = false;
       }
 
@@ -1883,6 +1885,7 @@ var Viewer = function () {
       this.count = 0;
       this.$images = $images;
       this.$body = $('body');
+      this.scrollbarWidth = window.innerWidth - document.body.clientWidth;
 
       if (options.inline) {
         $element.one(EVENT_READY, function () {
@@ -1992,7 +1995,6 @@ var Viewer = function () {
 
     /**
      * Change the default options.
-     * @static
      * @param {Object} options - The new default options.
      */
 
@@ -2006,47 +2008,51 @@ var Viewer = function () {
   return Viewer;
 }();
 
-$.extend(Viewer.prototype, render, events, handlers, methods, others);
+if ($.extend) {
+  $.extend(Viewer.prototype, render, events, handlers, methods, others);
+}
 
-var AnotherViewer = $.fn.viewer;
+if ($.fn) {
+  var AnotherViewer = $.fn.viewer;
 
-$.fn.viewer = function jQueryViewer(option) {
-  for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    args[_key - 1] = arguments[_key];
-  }
-
-  var result = void 0;
-
-  this.each(function (i, element) {
-    var $element = $(element);
-    var data = $element.data(NAMESPACE);
-
-    if (!data) {
-      if (/destroy/.test(option)) {
-        return;
-      }
-
-      var options = $.extend({}, $element.data(), $.isPlainObject(option) && option);
-
-      data = new Viewer(element, options);
-      $element.data(NAMESPACE, data);
+  $.fn.viewer = function jQueryViewer(option) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
     }
 
-    if (isString(option)) {
-      var fn = data[option];
+    var result = void 0;
 
-      if ($.isFunction(fn)) {
-        result = fn.apply(data, args);
+    this.each(function (i, element) {
+      var $element = $(element);
+      var data = $element.data(NAMESPACE);
+
+      if (!data) {
+        if (/destroy/.test(option)) {
+          return;
+        }
+
+        var options = $.extend({}, $element.data(), $.isPlainObject(option) && option);
+
+        data = new Viewer(element, options);
+        $element.data(NAMESPACE, data);
       }
-    }
-  });
 
-  return isUndefined(result) ? this : result;
-};
+      if (isString(option)) {
+        var fn = data[option];
 
-$.fn.viewer.Constructor = Viewer;
-$.fn.viewer.setDefaults = Viewer.setDefaults;
-$.fn.viewer.noConflict = function noConflict() {
-  $.fn.viewer = AnotherViewer;
-  return this;
-};
+        if ($.isFunction(fn)) {
+          result = fn.apply(data, args);
+        }
+      }
+    });
+
+    return isUndefined(result) ? this : result;
+  };
+
+  $.fn.viewer.Constructor = Viewer;
+  $.fn.viewer.setDefaults = Viewer.setDefaults;
+  $.fn.viewer.noConflict = function noConflict() {
+    $.fn.viewer = AnotherViewer;
+    return this;
+  };
+}
