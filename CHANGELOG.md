@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha (Mar 11, 2018)
+
+- The core code of Viewer is replaced with [Viewer.js](https://github.com/fengyuanchen/viewerjs) now.
+
 ## 0.7.0 (Mar 11, 2018)
 
 - Emulate scroll bar width when modal opening.

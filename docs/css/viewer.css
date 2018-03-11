@@ -1,11 +1,11 @@
 /*!
- * Viewer v0.7.0
+ * Viewer v1.0.0-alpha
  * https://github.com/fengyuanchen/viewer
  *
  * Copyright (c) 2015-2018 Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2018-03-11T02:48:23.074Z
+ * Date: 2018-03-11T04:59:22.442Z
  */
 
 .viewer-zoom-in::before,
@@ -103,7 +103,6 @@
 }
 
 .viewer-container {
-  background-color: rgba(0, 0, 0, .5);
   bottom: 0;
   direction: ltr;
   font-size: 0;
@@ -191,14 +190,33 @@
   line-height: 0;
   opacity: .5;
   overflow: hidden;
+  -webkit-transition: opacity .15s;
+  transition: opacity .15s;
   width: 30px;
+}
+
+.viewer-list > li:hover {
+  opacity: .75;
 }
 
 .viewer-list > li + li {
   margin-left: 1px;
 }
 
-.viewer-list > .viewer-active {
+.viewer-list > .viewer-loading {
+  position: relative;
+}
+
+.viewer-list > .viewer-loading::after {
+  border-width: 2px;
+  height: 20px;
+  margin-left: -10px;
+  margin-top: -10px;
+  width: 20px;
+}
+
+.viewer-list > .viewer-active,
+.viewer-list > .viewer-active:hover {
   opacity: 1;
 }
 
@@ -219,43 +237,56 @@
   top: 0;
 }
 
-.viewer-toolbar {
+.viewer-toolbar ul {
+  display: inline-block;
   margin: 0 auto 5px;
   overflow: hidden;
   padding: 3px 0;
-  width: 280px;
 }
 
-.viewer-toolbar > li {
+.viewer-toolbar li {
   background-color: rgba(0, 0, 0, .5);
   border-radius: 50%;
   cursor: pointer;
   float: left;
   height: 24px;
   overflow: hidden;
+  -webkit-transition: background-color .15s;
+  transition: background-color .15s;
   width: 24px;
 }
 
-.viewer-toolbar > li:hover {
+.viewer-toolbar li:hover {
   background-color: rgba(0, 0, 0, .8);
 }
 
-.viewer-toolbar > li::before {
+.viewer-toolbar li::before {
   margin: 2px;
 }
 
-.viewer-toolbar > li + li {
+.viewer-toolbar li + li {
   margin-left: 1px;
 }
 
-.viewer-toolbar > .viewer-play {
+.viewer-toolbar .viewer-small {
+  height: 18px;
+  margin-bottom: 3px;
+  margin-top: 3px;
+  width: 18px;
+}
+
+.viewer-toolbar .viewer-small::before {
+  margin: -1px;
+}
+
+.viewer-toolbar .viewer-large {
   height: 30px;
   margin-bottom: -3px;
   margin-top: -3px;
   width: 30px;
 }
 
-.viewer-toolbar > .viewer-play::before {
+.viewer-toolbar .viewer-large::before {
   margin: 5px;
 }
 
@@ -286,6 +317,8 @@
   opacity: .8;
   overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-transition: opacity .15s;
+  transition: opacity .15s;
   white-space: nowrap;
 }
 
@@ -302,7 +335,14 @@
   position: absolute;
   right: -40px;
   top: -40px;
+  -webkit-transition: background-color .15s;
+  transition: background-color .15s;
   width: 80px;
+}
+
+.viewer-button:focus,
+.viewer-button:hover {
+  background-color: rgba(0, 0, 0, .8);
 }
 
 .viewer-button::before {
@@ -327,6 +367,10 @@
   display: none;
 }
 
+.viewer-backdrop {
+  background-color: rgba(0, 0, 0, .5);
+}
+
 .viewer-invisible {
   visibility: hidden;
 }
@@ -348,6 +392,48 @@
 .viewer-transition {
   -webkit-transition: all .3s;
   transition: all .3s;
+}
+
+@-webkit-keyframes viewer-spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes viewer-spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.viewer-loading::after {
+  -webkit-animation: viewer-spinner 1s linear infinite;
+  animation: viewer-spinner 1s linear infinite;
+  border: 4px solid rgba(255, 255, 255, .1);
+  border-left-color: rgba(255, 255, 255, .5);
+  border-radius: 50%;
+  content: '';
+  display: inline-block;
+  height: 40px;
+  left: 50%;
+  margin-left: -20px;
+  margin-top: -20px;
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  z-index: 1;
 }
 
 @media (max-width: 767px) {
