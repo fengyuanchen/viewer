@@ -41,7 +41,7 @@ if ($.fn) {
       }
     });
 
-    return typeof result === 'undefined' ? this : result;
+    return result !== undefined ? result : this;
   };
 
   $.fn.viewer.Constructor = Viewer;
