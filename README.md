@@ -25,7 +25,7 @@ dist/
 ### Installation
 
 ```shell
-npm install imageviewer
+npm install imageviewer jquery
 ```
 
 Include files:
