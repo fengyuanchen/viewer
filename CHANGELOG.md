@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-beta (Mar 15, 2018)
+
+- Upgrade Viewer.js to 1.0.0-rc.1.
+
 ## 1.0.0-alpha (Mar 11, 2018)
 
 - The core code of Viewer is replaced with [Viewer.js](https://github.com/fengyuanchen/viewerjs) now.
