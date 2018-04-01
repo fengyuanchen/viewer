@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0 (Apr 1, 2018)
+
+- Upgrade Viewer.js to 1.0.0.
+
 ## 1.0.0-beta (Mar 15, 2018)
 
 - Upgrade Viewer.js to 1.0.0-rc.1.
