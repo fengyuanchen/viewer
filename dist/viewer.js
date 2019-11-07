@@ -388,8 +388,11 @@
     if (!value) {
       return;
     }
+    if(!element){
+    	return;
+    }
 
-    if (isNumber(element.length)) {
+    if (typeof(element.length)!='undefined' && isNumber(element.length)) {
       forEach(element, function (elem) {
         removeClass(elem, value);
       });
@@ -1659,7 +1662,9 @@
       var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
       index = Number(index) || 0;
-
+      
+      index = index >= this.length?0:index;
+      
       if (!this.isShown) {
         this.index = index;
         return this.show();
