@@ -1,47 +1,47 @@
 const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const nodeResolve = require('rollup-plugin-node-resolve');
+const changeCase = require('change-case');
+const createBanner = require('create-banner');
 const pkg = require('./package');
 
-const now = new Date();
-const banner = `/*!
- * Viewer v${pkg.version}
- * https://github.com/${pkg.repository}
- *
- * Copyright (c) 2015-${now.getFullYear()} ${pkg.author.name}
- * Released under the ${pkg.license} license
- *
- * Date: ${now.toISOString()}
- */
-`;
+pkg.name = pkg.name.replace('image', '');
+
+const name = changeCase.pascalCase(pkg.name);
+const banner = createBanner({
+  data: {
+    name,
+    year: '2015-present',
+  },
+});
 
 module.exports = {
   input: 'src/index.js',
   output: [
     {
       banner,
-      file: 'dist/viewer.js',
+      name,
+      file: `dist/${pkg.name}.js`,
       format: 'umd',
-      name: 'Viewer',
       globals: {
         jquery: 'jQuery',
       },
     },
     {
       banner,
-      file: 'dist/viewer.common.js',
+      file: `dist/${pkg.name}.common.js`,
       format: 'cjs',
     },
     {
       banner,
-      file: 'dist/viewer.esm.js',
+      file: `dist/${pkg.name}.esm.js`,
       format: 'es',
     },
     {
       banner,
-      file: 'docs/js/viewer.js',
+      name,
+      file: `docs/js/${pkg.name}.js`,
       format: 'umd',
-      name: 'Viewer',
       globals: {
         jquery: 'jQuery',
       },
@@ -51,8 +51,6 @@ module.exports = {
   plugins: [
     nodeResolve(),
     commonjs(),
-    babel({
-      plugins: ['external-helpers'],
-    }),
+    babel(),
   ],
 };
