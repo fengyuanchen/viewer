@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import '../src';
+
 describe('viewer', () => {
   const createImage = () => {
     const container = document.createElement('div');
@@ -49,5 +52,16 @@ describe('viewer', () => {
       expect(event.type).to.equal('ready');
       done();
     }).viewer('show');
+  });
+
+  it('should rollback when call the $.fn.viewer.conflict', () => {
+    const { viewer } = $.fn;
+    const noConflictViewer = $.fn.viewer.noConflict();
+
+    expect(noConflictViewer).to.equal(viewer);
+    expect($.fn.viewer).to.be.undefined;
+
+    // Reverts it for the rest test suites
+    $.fn.viewer = noConflictViewer;
   });
 });
