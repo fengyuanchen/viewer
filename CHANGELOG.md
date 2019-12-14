@@ -1,12 +1,16 @@
 # Changelog
 
+## 1.1.0 (Dec 14 2019)
+
+- Upgrade the built-in Viewer.js to v1.5.0.
+
 ## 1.0.0 (Apr 1, 2018)
 
-- Upgrade Viewer.js to 1.0.0.
+- Upgrade Viewer.js to v1.0.0.
 
 ## 1.0.0-beta (Mar 15, 2018)
 
-- Upgrade Viewer.js to 1.0.0-rc.1.
+- Upgrade Viewer.js to v1.0.0-rc.1.
 
 ## 1.0.0-alpha (Mar 11, 2018)
 
